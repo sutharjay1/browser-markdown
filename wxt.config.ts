@@ -32,6 +32,9 @@ function asciiSafeExtensionOutput(): Plugin {
 
 export default defineConfig({
   manifestVersion: 3,
+  // 'output' instead of the default '.output': macOS file dialogs hide dot-folders,
+  // making the build unselectable in Firefox's "Load Temporary Add-on" picker.
+  outDir: 'output',
   vite: () => ({
     plugins: [asciiSafeExtensionOutput()],
   }),

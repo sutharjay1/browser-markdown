@@ -17,7 +17,7 @@
     "build": "wxt build -b chrome && wxt build -b firefox",
     "zip": "wxt zip -b chrome && wxt zip -b firefox",
     "e2e": "playwright test",
-    "lint:firefox": "web-ext lint --source-dir .output/firefox-mv3"
+    "lint:firefox": "web-ext lint --source-dir output/firefox-mv3"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

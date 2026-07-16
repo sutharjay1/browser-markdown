@@ -3,7 +3,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const EXT_PATH = path.resolve('.output/chrome-mv3');
+const EXT_PATH = path.resolve('output/chrome-mv3');
 const PORT = 8123;
 
 let server: http.Server;

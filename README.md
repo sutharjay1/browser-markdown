@@ -13,7 +13,7 @@ pnpm install
 pnpm dev             # Chrome with HMR
 pnpm dev:firefox     # Firefox
 pnpm test            # unit tests (vitest)
-pnpm build           # both browsers → .output/
+pnpm build           # both browsers → output/
 pnpm e2e             # Playwright (requires pnpm build first)
 pnpm lint:firefox    # AMO linter over the Firefox build
 pnpm zip             # store-ready packages
@@ -26,7 +26,7 @@ Step-by-step guides with screenshots-level detail:
 - **[Chrome install guide](INSTALL_CHROME.md)**
 - **[Firefox install guide](INSTALL_FIREFOX.md)**
 
-Quick version: build with `pnpm install && pnpm build`, then load `.output/chrome-mv3` unpacked in Chrome (and enable **Allow access to file URLs**), or `.output/firefox-mv3/manifest.json` as a temporary add-on in Firefox (and grant site access under Manage Extension → Permissions).
+Quick version: build with `pnpm install && pnpm build`, then load `output/chrome-mv3` unpacked in Chrome (and enable **Allow access to file URLs**), or `output/firefox-mv3/manifest.json` as a temporary add-on in Firefox (and grant site access under Manage Extension → Permissions).
 
 ## Store notes
 

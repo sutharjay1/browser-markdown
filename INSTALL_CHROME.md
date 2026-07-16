@@ -15,14 +15,14 @@ pnpm install
 pnpm build
 ```
 
-The extension folder is `.output/chrome-mv3/`.
+The extension folder is `output/chrome-mv3/`.
 
 ## 2. Load it
 
 1. Open `chrome://extensions` in a new tab.
 2. Turn on **Developer mode** (toggle in the top-right corner).
 3. Click **Load unpacked** (top-left).
-4. Select the extension folder (`.output/chrome-mv3` if built from source, or the unzipped folder).
+4. Select the extension folder (`output/chrome-mv3` if built from source, or the unzipped folder).
 
 The "Markdown Viewer" card appears in the list. That's the extension installed — remote markdown URLs (e.g. `raw.githubusercontent.com/.../README.md`) render immediately.
 

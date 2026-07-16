@@ -15,13 +15,13 @@ pnpm install
 pnpm build
 ```
 
-The extension folder is `.output/firefox-mv3/`.
+The extension folder is `output/firefox-mv3/`.
 
 ## 2. Load it (temporary add-on)
 
 1. Open `about:debugging#/runtime/this-firefox` in a new tab.
 2. Click **Load Temporary Add-on…**
-3. Select `.output/firefox-mv3/manifest.json` (or the release zip file).
+3. Select `output/firefox-mv3/manifest.json` (or the release zip file).
 
 The extension appears under "Temporary Extensions". **Note:** temporary add-ons are removed when Firefox quits — you'll need to reload after each restart. For a persistent install, see the last section.
 
@@ -53,7 +53,7 @@ Firefox allows content scripts on `file://` URLs for temporary add-ons without a
 Unsigned extensions can be permanently installed only in **Firefox Developer Edition**, **Nightly**, or **ESR**:
 
 1. In `about:config`, set `xpinstall.signatures.required` to `false`.
-2. Build the zip: `pnpm zip` → `.output/browser-markdown-<version>-firefox.zip`.
+2. Build the zip: `pnpm zip` → `output/browser-markdown-<version>-firefox.zip`.
 3. Open `about:addons` → gear icon → **Install Add-on From File…** → select the zip.
 
 (Regular release Firefox enforces signing and won't keep unsigned extensions — use the temporary method there, or wait for the AMO listing.)

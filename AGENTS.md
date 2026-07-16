@@ -12,12 +12,12 @@ A Chrome (MV3) + Firefox (MV3) extension that renders raw `.md` files in place �
 | `pnpm dev` | Chrome dev build with HMR |
 | `pnpm dev:firefox` | Firefox dev build |
 | `pnpm test` | Unit tests (vitest, jsdom) — `tests/**/*.test.ts` |
-| `pnpm build` | Production builds for both browsers → `.output/chrome-mv3/`, `.output/firefox-mv3/` |
+| `pnpm build` | Production builds for both browsers → `output/chrome-mv3/`, `output/firefox-mv3/` |
 | `pnpm e2e` | Playwright E2E (`tests/e2e/*.spec.ts`) — requires `pnpm build` first and `pnpm exec playwright install chromium` once |
 | `pnpm lint:firefox` | AMO linter (`web-ext lint`) over the Firefox build |
-| `pnpm zip` | Store-ready zips → `.output/*.zip` |
+| `pnpm zip` | Store-ready zips → `output/*.zip` |
 
-Type check: `npx tsc --noEmit` (strict mode).
+Type check: `pnpm exec tsc --noEmit` (strict mode).
 
 ## Architecture
 
