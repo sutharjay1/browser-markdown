@@ -124,7 +124,7 @@ body {
   right: 16px;
   display: flex;
   gap: 6px;
-  z-index: 10;
+  z-index: 30; /* above the mobile sidebar drawer so Contents stays tappable */
 }
 .mdv-btn {
   display: inline-flex;
@@ -202,8 +202,34 @@ body {
   .mdv-btn-label {
     display: none;
   }
+  /* The frontmatter Expand button keeps its label — a lone chevron reads poorly */
+  .mdv-fm-expand-btn .mdv-btn-label {
+    display: inline;
+  }
   #mdv-content {
-    padding: 48px 20px 80px;
+    padding: 56px 16px 72px;
+  }
+  #mdv-raw {
+    padding: 56px 16px;
+  }
+  /* Sidebar becomes an overlay drawer instead of pushing content */
+  #mdv-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    max-height: none;
+    width: min(300px, 85vw);
+    background: var(--mdv-canvas);
+    z-index: 20;
+  }
+  #mdv-root[data-sidebar-collapsed] #mdv-sidebar {
+    width: 0;
+  }
+  #mdv-toolbar {
+    top: 10px;
+    right: 10px;
   }
 }
 @media print {

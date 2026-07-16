@@ -27,7 +27,16 @@ let disconnectScrollSpy: (() => void) | null = null;
 export function initViewer(rawText: string, settings: Settings): void {
   const shell = buildShell(rawText);
   document.body.replaceChildren(shell.root);
-  if (window.innerWidth < 960) shell.root.setAttribute('data-sidebar-collapsed', '');
+  // Raw text/plain documents ship without a viewport meta, so mobile browsers
+  // render a zoomed-out 980px virtual page. Inject one before styling matters.
+  if (!document.querySelector('meta[name="viewport"]')) {
+    const viewport = document.createElement('meta');
+    viewport.name = 'viewport';
+    viewport.content = 'width=device-width, initial-scale=1';
+    document.head.appendChild(viewport);
+  }
+  // Sidebar starts closed everywhere; the Contents button opens it on demand.
+  shell.root.setAttribute('data-sidebar-collapsed', '');
   applyTheme(settings.theme);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if (settings.theme === 'auto') applyTheme('auto');
@@ -67,6 +76,7 @@ export async function updateContent(
     shell.toolbar.querySelector('.mdv-btn-raw')?.classList.add('is-active');
     return;
   }
+  setupFrontmatterCollapse(shell.article);
   const firstHeading = shell.article.querySelector('h1, h2');
   document.title =
     firstHeading?.textContent?.trim() || location.pathname.split('/').pop() || 'Markdown';
@@ -86,6 +96,40 @@ export async function updateContent(
   shell.tocHost.replaceChildren(renderTocList(collectHeadings(shell.article)));
   disconnectScrollSpy = initScrollSpy(shell.article, shell.tocHost);
 }
+
+/** Long frontmatter starts clamped with a gradient-fade Expand button;
+ *  expanding is one-way (no collapse) and animates unless reduced-motion. */
+function setupFrontmatterCollapse(article: HTMLElement): void {
+  const fm = article.querySelector<HTMLElement>('.mdv-frontmatter');
+  if (!fm || fm.scrollHeight <= 420) return;
+  fm.classList.add('is-collapsed');
+  const overlay = document.createElement('div');
+  overlay.className = 'mdv-fm-expand';
+  const btn = makeButton('Expand', 'Show all metadata', iconChevronDown());
+  btn.classList.add('mdv-fm-expand-btn');
+  let expanded = false;
+  btn.addEventListener('click', () => {
+    if (expanded) return;
+    expanded = true;
+    const finish = () => {
+      fm.classList.remove('is-collapsed');
+      fm.style.maxHeight = '';
+      overlay.remove();
+    };
+    if (matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      fm.style.maxHeight = `${fm.scrollHeight}px`;
+      overlay.classList.add('is-hidden');
+      fm.addEventListener('transitionend', finish, { once: true });
+      setTimeout(finish, 450); // safety net if transitionend never fires
+    } else {
+      finish();
+    }
+  });
+  overlay.appendChild(btn);
+  fm.appendChild(overlay);
+}
+
+const iconChevronDown = (): SVGSVGElement => makeIcon([{ d: 'M4 6.5 8 10.5 12 6.5' }]);
 
 async function renderMermaidDiagrams(article: HTMLElement, settings: Settings): Promise<void> {
   if (!settings.enableMermaid) return;
