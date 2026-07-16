@@ -1,0 +1,106 @@
+:root {
+  color-scheme: light;
+}
+html[data-mdv-theme='dark'] {
+  color-scheme: dark;
+}
+body {
+  margin: 0;
+}
+#mdv-root {
+  --mdv-bg: #ffffff;
+  --mdv-border: #d0d7de;
+  --mdv-muted: #57606a;
+  display: flex;
+  min-height: 100vh;
+  background: var(--mdv-bg);
+}
+html[data-mdv-theme='dark'] #mdv-root {
+  --mdv-bg: #0d1117;
+  --mdv-border: #30363d;
+  --mdv-muted: #8b949e;
+}
+#mdv-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  width: 260px;
+  max-height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 16px 8px;
+  border-right: 1px solid var(--mdv-border);
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+#mdv-root[data-sidebar-collapsed] #mdv-sidebar {
+  display: none;
+}
+.mdv-toc a {
+  display: block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: var(--mdv-muted);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mdv-toc a:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+.mdv-toc a.active {
+  color: #2f81f7;
+  font-weight: 600;
+}
+.mdv-toc a[data-level='2'] {
+  padding-left: 20px;
+}
+.mdv-toc a[data-level='3'] {
+  padding-left: 32px;
+}
+.mdv-toc a[data-level='4'],
+.mdv-toc a[data-level='5'],
+.mdv-toc a[data-level='6'] {
+  padding-left: 44px;
+}
+#mdv-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 32px 48px 96px;
+  box-sizing: border-box;
+}
+#mdv-toolbar {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+.mdv-btn {
+  border: 1px solid var(--mdv-border);
+  background: var(--mdv-bg);
+  color: var(--mdv-muted);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.mdv-btn:hover {
+  filter: brightness(0.95);
+}
+#mdv-raw {
+  flex: 1;
+  padding: 24px;
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap;
+  color: var(--mdv-muted);
+}
+@media print {
+  #mdv-sidebar,
+  #mdv-toolbar {
+    display: none;
+  }
+}
