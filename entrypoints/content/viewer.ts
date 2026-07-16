@@ -15,6 +15,8 @@ declare global {
 export interface ViewerShell {
   root: HTMLElement;
   sidebar: HTMLElement;
+  sidebarTitle: HTMLElement;
+  tocHost: HTMLElement;
   toolbar: HTMLElement;
   article: HTMLElement;
   rawPre: HTMLPreElement;
@@ -25,6 +27,7 @@ let disconnectScrollSpy: (() => void) | null = null;
 export function initViewer(rawText: string, settings: Settings): void {
   const shell = buildShell(rawText);
   document.body.replaceChildren(shell.root);
+  if (window.innerWidth < 960) shell.root.setAttribute('data-sidebar-collapsed', '');
   applyTheme(settings.theme);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if (settings.theme === 'auto') applyTheme('auto');
@@ -66,6 +69,7 @@ export async function updateContent(
   const firstHeading = shell.article.querySelector('h1, h2');
   document.title =
     firstHeading?.textContent?.trim() || location.pathname.split('/').pop() || 'Markdown';
+  shell.sidebarTitle.textContent = document.title;
   if (location.hash) {
     try {
       document
@@ -78,8 +82,8 @@ export async function updateContent(
   highlightCodeBlocks(shell.article);
   await renderMermaidDiagrams(shell.article, settings);
   disconnectScrollSpy?.();
-  shell.sidebar.replaceChildren(renderTocList(collectHeadings(shell.article)));
-  disconnectScrollSpy = initScrollSpy(shell.article, shell.sidebar);
+  shell.tocHost.replaceChildren(renderTocList(collectHeadings(shell.article)));
+  disconnectScrollSpy = initScrollSpy(shell.article, shell.tocHost);
 }
 
 async function renderMermaidDiagrams(article: HTMLElement, settings: Settings): Promise<void> {
@@ -102,6 +106,17 @@ function buildShell(rawText: string): ViewerShell {
   root.id = 'mdv-root';
   const sidebar = document.createElement('aside');
   sidebar.id = 'mdv-sidebar';
+  const sidebarHeader = document.createElement('div');
+  sidebarHeader.className = 'mdv-sidebar-header';
+  const caption = document.createElement('div');
+  caption.className = 'mdv-sidebar-caption';
+  caption.textContent = 'On this page';
+  const sidebarTitle = document.createElement('div');
+  sidebarTitle.className = 'mdv-sidebar-title';
+  sidebarHeader.append(caption, sidebarTitle);
+  const tocHost = document.createElement('div');
+  tocHost.id = 'mdv-toc-host';
+  sidebar.append(sidebarHeader, tocHost);
   const toolbar = document.createElement('div');
   toolbar.id = 'mdv-toolbar';
   const article = document.createElement('main');
@@ -112,16 +127,55 @@ function buildShell(rawText: string): ViewerShell {
   rawPre.textContent = rawText;
   rawPre.hidden = true;
   root.append(sidebar, toolbar, article, rawPre);
-  return { root, sidebar, toolbar, article, rawPre };
+  return { root, sidebar, sidebarTitle, tocHost, toolbar, article, rawPre };
 }
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+type IconPart = Record<string, string>;
+
+function makeIcon(parts: IconPart[]): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 16 16');
+  svg.setAttribute('width', '14');
+  svg.setAttribute('height', '14');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.5');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  for (const part of parts) {
+    const { tag = 'path', ...attrs } = part;
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+    svg.appendChild(el);
+  }
+  return svg;
+}
+
+const iconPanelLeft = (): SVGSVGElement =>
+  makeIcon([
+    { tag: 'rect', x: '1.5', y: '2.5', width: '13', height: '11', rx: '2' },
+    { tag: 'line', x1: '6', y1: '2.5', x2: '6', y2: '13.5' },
+  ]);
+
+const iconTheme = (): SVGSVGElement =>
+  makeIcon([
+    { tag: 'circle', cx: '8', cy: '8', r: '6.25' },
+    { d: 'M8 1.75a6.25 6.25 0 0 1 0 12.5z', fill: 'currentColor', stroke: 'none' },
+  ]);
+
+const iconRaw = (): SVGSVGElement =>
+  makeIcon([{ d: 'M6 4 2.5 8 6 12' }, { d: 'M10 4 13.5 8 10 12' }]);
+
 function wireToolbar(shell: ViewerShell, settings: Settings): void {
-  const tocBtn = makeButton('☰', 'Toggle table of contents');
+  const tocBtn = makeButton('Contents', 'Toggle table of contents', iconPanelLeft());
   tocBtn.addEventListener('click', () => {
     shell.root.toggleAttribute('data-sidebar-collapsed');
   });
 
-  const themeBtn = makeButton('◐', 'Cycle theme (auto → light → dark)');
+  const themeBtn = makeButton('Theme', 'Cycle theme (auto → light → dark)', iconTheme());
   themeBtn.addEventListener('click', () => {
     const order: Settings['theme'][] = ['auto', 'light', 'dark'];
     settings.theme = order[(order.indexOf(settings.theme) + 1) % order.length];
@@ -129,23 +183,27 @@ function wireToolbar(shell: ViewerShell, settings: Settings): void {
     void saveSettings(settings);
   });
 
-  const rawBtn = makeButton('{ }', 'Toggle raw markdown');
+  const rawBtn = makeButton('Raw', 'Toggle raw markdown', iconRaw());
   rawBtn.addEventListener('click', () => {
     const showRaw = shell.rawPre.hidden;
     shell.rawPre.hidden = !showRaw;
     shell.article.hidden = showRaw;
     shell.sidebar.hidden = showRaw;
+    rawBtn.classList.toggle('is-active', Boolean(showRaw));
   });
 
   shell.toolbar.append(tocBtn, themeBtn, rawBtn);
 }
 
-function makeButton(label: string, title: string): HTMLButtonElement {
+function makeButton(label: string, title: string, icon: SVGSVGElement): HTMLButtonElement {
   const b = document.createElement('button');
   b.type = 'button';
-  b.textContent = label;
   b.title = title;
   b.className = 'mdv-btn';
+  const text = document.createElement('span');
+  text.className = 'mdv-btn-label';
+  text.textContent = label;
+  b.append(icon, text);
   return b;
 }
 
