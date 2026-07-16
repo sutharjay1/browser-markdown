@@ -186,6 +186,7 @@ function wireToolbar(shell: ViewerShell, settings: Settings): void {
 
   const rawBtn = makeButton('Raw', 'Toggle raw markdown', iconRaw());
   rawBtn.classList.add('mdv-btn-raw');
+  rawBtn.classList.toggle('is-active', !shell.rawPre.hidden);
   rawBtn.addEventListener('click', () => {
     const showRaw = shell.rawPre.hidden;
     shell.rawPre.hidden = !showRaw;
