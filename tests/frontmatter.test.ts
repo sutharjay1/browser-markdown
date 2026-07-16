@@ -46,10 +46,11 @@ describe('renderFrontmatterHtml', () => {
     expect(html).toContain('primary');
   });
 
-  it('renders deep nested maps as captioned groups', () => {
+  it('renders deep nested maps as captioned groups inside a flex-row wrapper', () => {
     const html = renderFrontmatterHtml({
       typography: { 'hero-display': { fontSize: '80px', fontWeight: 600 } },
     });
+    expect(html).toContain('mdv-fm-groups');
     expect(html).toContain('mdv-fm-group');
     expect(html).toContain('hero-display');
     expect(html).toContain('80px');

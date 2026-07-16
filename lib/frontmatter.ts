@@ -56,17 +56,19 @@ function mapHtml(obj: Record<string, unknown>): string {
     const cells = entries.map(([, v]) => `<td>${valueHtml(v)}</td>`).join('');
     return `<div class="mdv-fm-scroll"><table class="mdv-fm-table"><thead><tr>${head}</tr></thead><tbody><tr>${cells}</tr></tbody></table></div>`;
   }
-  // Mixed/deep map → one captioned group per key, recursing.
-  return entries
+  // Mixed/deep map → captioned groups flowing as a wrapping flex row.
+  const groups = entries
     .map(
       ([k, v]) =>
         `<div class="mdv-fm-group"><div class="mdv-fm-caption">${escapeHtml(k)}</div>${valueHtml(v)}</div>`,
     )
     .join('');
+  return `<div class="mdv-fm-groups">${groups}</div>`;
 }
 
 /** GitHub-style metadata table for a parsed frontmatter map. Output is
- *  HTML-escaped here and additionally sanitized by the renderer's DOMPurify pass. */
+ *  HTML-escaped here and additionally sanitized by the renderer's DOMPurify pass.
+ *  The <section> wrapper breaks out of the article column via CSS (wide, centered). */
 export function renderFrontmatterHtml(data: Record<string, unknown>): string {
   const rows = Object.entries(data)
     .map(
@@ -74,5 +76,5 @@ export function renderFrontmatterHtml(data: Record<string, unknown>): string {
         `<tr><th class="mdv-fm-key">${escapeHtml(key)}</th><td class="mdv-fm-value">${valueHtml(value)}</td></tr>`,
     )
     .join('');
-  return `<table class="mdv-frontmatter"><tbody>${rows}</tbody></table>\n`;
+  return `<section class="mdv-frontmatter"><table class="mdv-fm-root"><tbody>${rows}</tbody></table></section>\n`;
 }

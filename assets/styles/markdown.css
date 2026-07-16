@@ -192,19 +192,42 @@
   transform: rotate(45deg);
 }
 
-/* Frontmatter metadata table (GitHub-style, Cursor-skinned) */
+/* Frontmatter metadata table (GitHub-style, Cursor-skinned).
+   The section breaks out of the 780px article column: wider (up to 1080px)
+   and centered on the content column via left 50% + translate. */
 .markdown-body .mdv-frontmatter {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1080px, calc(100vw - 344px)); /* viewport minus sidebar (248) + breathing room */
+  max-width: none;
   border: 1px solid var(--mdv-hairline);
   border-radius: 8px;
   overflow: hidden;
-  margin: 0 0 32px;
+  margin: 0 0 40px;
 }
-.markdown-body .mdv-frontmatter > tbody > tr > .mdv-fm-key {
-  width: 120px;
-  min-width: 96px;
+#mdv-root[data-sidebar-collapsed] .markdown-body .mdv-frontmatter {
+  width: min(1080px, calc(100vw - 96px));
+}
+@media (max-width: 900px) {
+  .markdown-body .mdv-frontmatter,
+  #mdv-root[data-sidebar-collapsed] .markdown-body .mdv-frontmatter {
+    width: 100%;
+    left: 0;
+    transform: none;
+  }
+}
+.markdown-body .mdv-fm-root {
+  width: 100%;
+  table-layout: fixed; /* strict widths so inner scroll regions contain wide tables */
+  border-collapse: separate;
+  border-spacing: 0;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+.markdown-body .mdv-fm-root > tbody > tr > .mdv-fm-key {
+  width: 132px;
   background: var(--mdv-canvas-soft);
   font-size: 11px;
   font-weight: 600;
@@ -216,18 +239,21 @@
   padding: 12px;
   border-bottom: 1px solid var(--mdv-hairline-soft);
   border-right: 1px solid var(--mdv-hairline-soft);
+  overflow-wrap: break-word;
 }
-.markdown-body .mdv-frontmatter > tbody > tr > .mdv-fm-value {
+.markdown-body .mdv-fm-root > tbody > tr > .mdv-fm-value {
   padding: 10px 12px;
   font-size: 13px;
   border-bottom: 1px solid var(--mdv-hairline-soft);
+  overflow: hidden; /* fixed layout: keep inner scroll regions inside the cell */
 }
-.markdown-body .mdv-frontmatter > tbody > tr:last-child > .mdv-fm-key,
-.markdown-body .mdv-frontmatter > tbody > tr:last-child > .mdv-fm-value {
+.markdown-body .mdv-fm-root > tbody > tr:last-child > .mdv-fm-key,
+.markdown-body .mdv-fm-root > tbody > tr:last-child > .mdv-fm-value {
   border-bottom: none;
 }
 .mdv-fm-scroll {
   overflow-x: auto;
+  max-width: 100%;
 }
 .markdown-body .mdv-fm-table {
   width: auto;
@@ -246,8 +272,17 @@
   white-space: nowrap;
   border-bottom: none;
 }
+/* Nested groups flow as a wrapping flex row (not a tall column) */
+.mdv-fm-groups {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px 28px;
+}
 .mdv-fm-group {
-  margin: 6px 0 12px;
+  margin: 2px 0 8px;
+  max-width: 100%;
+  min-width: 0;
 }
 .mdv-fm-caption {
   font-size: 11px;
@@ -255,7 +290,7 @@
   letter-spacing: 0.88px;
   text-transform: uppercase;
   color: var(--mdv-muted);
-  margin: 8px 0 4px;
+  margin: 6px 0 2px;
 }
 .mdv-fm-item {
   margin: 4px 0;
