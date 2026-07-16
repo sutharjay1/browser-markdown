@@ -1,3 +1,7 @@
+import '@fontsource/inter/latin-400.css';
+import '@fontsource/inter/latin-500.css';
+import '@fontsource/inter/latin-600.css';
+import '@/assets/styles/tokens.css';
 import { getSettings, saveSettings, type Settings } from '@/lib/settings';
 
 const form = document.getElementById('settings-form') as HTMLFormElement;

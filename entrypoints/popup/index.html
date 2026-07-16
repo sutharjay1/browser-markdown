@@ -6,24 +6,37 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <h1>Markdown Viewer</h1>
     <form id="settings-form">
-      <label class="row"><span>Enabled</span><input type="checkbox" name="enabled" /></label>
-      <label class="row"><span>Theme</span>
-        <select name="theme">
-          <option value="auto">Auto</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-      </label>
-      <label class="row"><span>Mermaid diagrams</span><input type="checkbox" name="enableMermaid" /></label>
-      <label class="row"><span>Math (KaTeX)</span><input type="checkbox" name="enableKatex" /></label>
-      <label class="row"><span>Emoji shortcodes</span><input type="checkbox" name="enableEmoji" /></label>
-      <label class="row"><span>Auto-reload local files</span><input type="checkbox" name="autoReload" /></label>
-      <label class="row"><span>Auto-reload remote URLs</span><input type="checkbox" name="autoReloadRemote" /></label>
-      <label class="row"><span>Reload interval (ms)</span><input type="number" name="autoReloadIntervalMs" min="500" step="250" /></label>
+      <header class="popup-header">
+        <div>
+          <h1>Markdown Viewer</h1>
+          <p class="version">Cursor-style markdown rendering</p>
+        </div>
+        <input type="checkbox" name="enabled" class="switch" title="Enable Markdown Viewer" />
+      </header>
+      <section class="group">
+        <label class="row"><span>Theme</span>
+          <select name="theme">
+            <option value="auto">Auto</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+      </section>
+      <section class="group">
+        <div class="group-caption">Rendering</div>
+        <label class="row"><span>Mermaid diagrams</span><input type="checkbox" name="enableMermaid" class="switch" /></label>
+        <label class="row"><span>Math (KaTeX)</span><input type="checkbox" name="enableKatex" class="switch" /></label>
+        <label class="row"><span>Emoji shortcodes</span><input type="checkbox" name="enableEmoji" class="switch" /></label>
+      </section>
+      <section class="group">
+        <div class="group-caption">Auto-reload</div>
+        <label class="row"><span>Local files</span><input type="checkbox" name="autoReload" class="switch" /></label>
+        <label class="row"><span>Remote URLs</span><input type="checkbox" name="autoReloadRemote" class="switch" /></label>
+        <label class="row"><span>Interval (ms)</span><input type="number" name="autoReloadIntervalMs" min="500" step="250" /></label>
+      </section>
+      <p class="hint">Theme applies live; other changes apply on next page load.</p>
     </form>
-    <p class="hint">Theme applies live; other changes apply on next page load.</p>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
