@@ -1,7 +1,7 @@
 import { renderMarkdown } from '@/lib/renderer';
 import { applyTheme } from '@/lib/theme';
 import type { Settings } from '@/lib/settings';
-import { watchSettings } from '@/lib/settings';
+import { watchSettings, saveSettings } from '@/lib/settings';
 import { highlightCodeBlocks } from '@/lib/highlight';
 import { collectHeadings, renderTocList, initScrollSpy } from '@/lib/toc';
 
@@ -29,7 +29,7 @@ export function initViewer(rawText: string, settings: Settings): void {
     if (settings.theme === 'auto') applyTheme('auto');
   });
   void updateContent(shell, rawText, settings);
-  // Task 10 wires the toolbar here.
+  wireToolbar(shell, settings);
   // Task 11 starts the auto-reload watcher here.
   watchSettings((s) => {
     settings.theme = s.theme;
@@ -92,4 +92,38 @@ function buildShell(rawText: string): ViewerShell {
   rawPre.hidden = true;
   root.append(sidebar, toolbar, article, rawPre);
   return { root, sidebar, toolbar, article, rawPre };
+}
+
+function wireToolbar(shell: ViewerShell, settings: Settings): void {
+  const tocBtn = makeButton('☰', 'Toggle table of contents');
+  tocBtn.addEventListener('click', () => {
+    shell.root.toggleAttribute('data-sidebar-collapsed');
+  });
+
+  const themeBtn = makeButton('◐', 'Cycle theme (auto → light → dark)');
+  themeBtn.addEventListener('click', () => {
+    const order: Settings['theme'][] = ['auto', 'light', 'dark'];
+    settings.theme = order[(order.indexOf(settings.theme) + 1) % order.length];
+    applyTheme(settings.theme);
+    void saveSettings(settings);
+  });
+
+  const rawBtn = makeButton('{ }', 'Toggle raw markdown');
+  rawBtn.addEventListener('click', () => {
+    const showRaw = shell.rawPre.hidden;
+    shell.rawPre.hidden = !showRaw;
+    shell.article.hidden = showRaw;
+    shell.sidebar.hidden = showRaw;
+  });
+
+  shell.toolbar.append(tocBtn, themeBtn, rawBtn);
+}
+
+function makeButton(label: string, title: string): HTMLButtonElement {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.textContent = label;
+  b.title = title;
+  b.className = 'mdv-btn';
+  return b;
 }
