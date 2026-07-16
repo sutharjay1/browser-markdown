@@ -4,6 +4,12 @@ import type { Settings } from '@/lib/settings';
 import { watchSettings } from '@/lib/settings';
 import { highlightCodeBlocks } from '@/lib/highlight';
 
+declare global {
+  interface Window {
+    __mdvRenderMermaid?: () => Promise<void>;
+  }
+}
+
 export interface ViewerShell {
   root: HTMLElement;
   sidebar: HTMLElement;
@@ -46,8 +52,23 @@ export async function updateContent(
       ?.scrollIntoView();
   }
   highlightCodeBlocks(shell.article);
-  // Task 8 renders mermaid diagrams here.
+  await renderMermaidDiagrams(shell.article, settings);
   // Task 9 rebuilds the TOC here.
+}
+
+async function renderMermaidDiagrams(article: HTMLElement, settings: Settings): Promise<void> {
+  if (!settings.enableMermaid) return;
+  if (!article.querySelector('pre.mermaid')) return;
+  try {
+    if (!window.__mdvRenderMermaid) {
+      // Loaded on demand from the extension bundle; requires the WAR entry from Task 1.
+      await import(/* @vite-ignore */ browser.runtime.getURL('/mermaid-runner.js'));
+    }
+    await window.__mdvRenderMermaid?.();
+  } catch (err) {
+    // Degrade, never break: the escaped diagram source stays visible.
+    console.warn('[markdown-viewer] mermaid rendering failed:', err);
+  }
 }
 
 function buildShell(rawText: string): ViewerShell {
