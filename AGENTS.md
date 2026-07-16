@@ -25,7 +25,7 @@ Type check: `pnpm exec tsc --noEmit` (strict mode).
 entrypoints/
   content/index.ts     content-script entry: URL-matched, gates on detect + settings.enabled
   content/viewer.ts    viewer shell (#mdv-root: sidebar/toolbar/article/raw), updateContent pipeline
-  content/viewer.css   viewer layout + theme variables (html[data-mdv-theme])
+  content/viewer.css   viewer chrome layout (sidebar/toolbar/raw); all colors come from tokens.css
   background.ts        minimal; DNR CSP-strip rules are static (public/rules.json)
   popup/               settings form, bound generically to Settings keys via input name=
   mermaid-runner.ts    unlisted script, lazy-imported only when a page has mermaid blocks

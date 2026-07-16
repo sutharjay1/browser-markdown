@@ -69,11 +69,12 @@
 }
 .markdown-body a {
   color: var(--mdv-accent);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--mdv-accent) 35%, transparent);
+  text-underline-offset: 2px;
 }
 .markdown-body a:hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration-color: var(--mdv-accent);
 }
 .markdown-body strong {
   font-weight: 600;

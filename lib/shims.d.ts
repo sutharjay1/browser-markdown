@@ -12,7 +12,3 @@ declare module '@vscode/markdown-it-katex' {
   const plugin: any;
   export default plugin;
 }
-declare module '*.css?inline' {
-  const css: string;
-  export default css;
-}

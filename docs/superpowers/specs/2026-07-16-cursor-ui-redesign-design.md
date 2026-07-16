@@ -37,7 +37,7 @@ Rejected alternative: keeping the `?inline` injection swap with new CSS strings 
 | `--mdv-surface-strong` | `#e6e5e0` | `#34322b` |
 | `--mdv-text` | `#26251e` | `#e8e6df` |
 | `--mdv-text-soft` | `#5a5852` | `#b5b2a7` |
-| `--mdv-muted` | `#807d72` | `#8f8c81` |
+| `--mdv-muted` | `#6e6b61` | `#8f8c81` |
 | `--mdv-muted-soft` | `#a09c92` | `#6b6960` |
 | `--mdv-hairline` | `#e6e5e0` | `#2a2925` |
 | `--mdv-hairline-soft` | `#efeee8` | `#23221e` |
@@ -111,3 +111,9 @@ Article on canvas directly (no card), max-width 780px, centered, padding 56px 48
 - Mermaid diagram re-theming on toggle (unchanged v1 behavior).
 - Popup live-preview of theme beyond current `watchSettings` behavior.
 - Icon set beyond the three toolbar glyphs.
+
+## Accepted tradeoffs (final review, 2026-07-16)
+
+- Light-mode body links stay Cursor Orange `#f54e00` (3.28:1 on canvas — below WCAG AA 4.5:1) as deliberate brand fidelity to cursor.com; mitigated by a permanent 35%-strength underline so color is never the sole link indicator (WCAG 1.4.1). Dark mode passes (6.5:1).
+- Light `--mdv-muted` darkened `#807d72` → `#6e6b61` (≈4.6:1) for captions/table headers; TOC links use `--mdv-text-soft` instead of muted.
+- The spec's nested-TOC "indent guide" line is intentionally omitted — indentation alone reads clearly and the guide added visual noise.

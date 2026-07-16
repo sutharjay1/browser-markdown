@@ -65,7 +65,7 @@ body {
   border-radius: 6px;
   font-size: 13px;
   line-height: 1.4;
-  color: var(--mdv-muted);
+  color: var(--mdv-text-soft);
   text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -90,6 +90,10 @@ body {
   height: 14px;
   border-radius: 2px;
   background: var(--mdv-accent);
+}
+.mdv-toc a:focus-visible {
+  outline: 2px solid var(--mdv-accent);
+  outline-offset: 1px;
 }
 .mdv-toc a[data-level='2'] {
   padding-left: 24px;
@@ -159,7 +163,7 @@ body {
   height: 28px;
   padding: 0 10px;
   background: var(--mdv-error-tint);
-  border: 1px solid var(--mdv-error);
+  border: 1px solid color-mix(in srgb, var(--mdv-error) 25%, transparent);
   border-radius: 6px;
   color: var(--mdv-error);
   font-size: 12px;

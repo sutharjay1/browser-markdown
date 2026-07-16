@@ -64,6 +64,7 @@ export async function updateContent(
       notice.textContent = 'Markdown rendering failed — showing raw text';
       shell.toolbar.append(notice);
     }
+    shell.toolbar.querySelector('.mdv-btn-raw')?.classList.add('is-active');
     return;
   }
   const firstHeading = shell.article.querySelector('h1, h2');
@@ -184,6 +185,7 @@ function wireToolbar(shell: ViewerShell, settings: Settings): void {
   });
 
   const rawBtn = makeButton('Raw', 'Toggle raw markdown', iconRaw());
+  rawBtn.classList.add('mdv-btn-raw');
   rawBtn.addEventListener('click', () => {
     const showRaw = shell.rawPre.hidden;
     shell.rawPre.hidden = !showRaw;
