@@ -4,6 +4,7 @@ import type { Settings } from '@/lib/settings';
 import { watchSettings, saveSettings } from '@/lib/settings';
 import { highlightCodeBlocks } from '@/lib/highlight';
 import { collectHeadings, renderTocList, initScrollSpy } from '@/lib/toc';
+import { watchFileChanges } from '@/lib/reload';
 
 declare global {
   interface Window {
@@ -30,7 +31,7 @@ export function initViewer(rawText: string, settings: Settings): void {
   });
   void updateContent(shell, rawText, settings);
   wireToolbar(shell, settings);
-  // Task 11 starts the auto-reload watcher here.
+  startAutoReload(shell, rawText, settings);
   watchSettings((s) => {
     settings.theme = s.theme;
     applyTheme(s.theme);
@@ -126,4 +127,15 @@ function makeButton(label: string, title: string): HTMLButtonElement {
   b.title = title;
   b.className = 'mdv-btn';
   return b;
+}
+
+function startAutoReload(shell: ViewerShell, initialRaw: string, settings: Settings): void {
+  const isFile = location.protocol === 'file:';
+  const enabled = isFile ? settings.autoReload : settings.autoReloadRemote;
+  if (!enabled) return;
+  watchFileChanges(location.href, settings.autoReloadIntervalMs, initialRaw, (text) => {
+    const scrollY = window.scrollY;
+    shell.rawPre.textContent = text;
+    void updateContent(shell, text, settings).then(() => window.scrollTo(0, scrollY));
+  });
 }
