@@ -1,0 +1,91 @@
+.hljs {
+  color: var(--mdv-text);
+  background: transparent;
+}
+.hljs-comment,
+.hljs-quote {
+  color: #8d8a7e;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-meta {
+  color: #b3372f;
+}
+.hljs-string,
+.hljs-addition,
+.hljs-regexp {
+  color: #1f7a5c;
+}
+.hljs-number,
+.hljs-literal,
+.hljs-deletion,
+.hljs-symbol {
+  color: #9a5b00;
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-function,
+.hljs-section,
+.hljs-name {
+  color: #6f42c1;
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params {
+  color: #2f6db5;
+}
+.hljs-type,
+.hljs-class,
+.hljs-title.class_,
+.hljs-built_in {
+  color: #b45309;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 600;
+}
+
+html[data-mdv-theme='dark'] .hljs-comment,
+html[data-mdv-theme='dark'] .hljs-quote {
+  color: #85826f;
+}
+html[data-mdv-theme='dark'] .hljs-keyword,
+html[data-mdv-theme='dark'] .hljs-selector-tag,
+html[data-mdv-theme='dark'] .hljs-meta {
+  color: #f57058;
+}
+html[data-mdv-theme='dark'] .hljs-string,
+html[data-mdv-theme='dark'] .hljs-addition,
+html[data-mdv-theme='dark'] .hljs-regexp {
+  color: #56d4a0;
+}
+html[data-mdv-theme='dark'] .hljs-number,
+html[data-mdv-theme='dark'] .hljs-literal,
+html[data-mdv-theme='dark'] .hljs-deletion,
+html[data-mdv-theme='dark'] .hljs-symbol {
+  color: #e0a45c;
+}
+html[data-mdv-theme='dark'] .hljs-title,
+html[data-mdv-theme='dark'] .hljs-title.function_,
+html[data-mdv-theme='dark'] .hljs-function,
+html[data-mdv-theme='dark'] .hljs-section,
+html[data-mdv-theme='dark'] .hljs-name {
+  color: #b99df5;
+}
+html[data-mdv-theme='dark'] .hljs-attr,
+html[data-mdv-theme='dark'] .hljs-attribute,
+html[data-mdv-theme='dark'] .hljs-variable,
+html[data-mdv-theme='dark'] .hljs-template-variable,
+html[data-mdv-theme='dark'] .hljs-params {
+  color: #7fb3e8;
+}
+html[data-mdv-theme='dark'] .hljs-type,
+html[data-mdv-theme='dark'] .hljs-class,
+html[data-mdv-theme='dark'] .hljs-title.class_,
+html[data-mdv-theme='dark'] .hljs-built_in {
+  color: #e0a45c;
+}
