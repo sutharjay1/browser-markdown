@@ -23,6 +23,9 @@ dependencies:
   highlight.js:
     specifier: ^11.11.1
     version: 11.11.1
+  js-yaml:
+    specifier: ^5.2.1
+    version: 5.2.1
   katex:
     specifier: ^0.17.0
     version: 0.17.0
@@ -58,6 +61,9 @@ devDependencies:
   '@playwright/test':
     specifier: ^1.61.1
     version: 1.61.1
+  '@types/js-yaml':
+    specifier: ^4.0.9
+    version: 4.0.9
   '@types/markdown-it':
     specifier: ^14.1.2
     version: 14.1.2
@@ -1141,6 +1147,10 @@ packages:
 
   /@types/har-format@1.2.16:
     resolution: {integrity: sha512-fluxdy7ryD3MV6h8pTfTYpy/xQzCFC7m89nOH9y94cNqJ1mDIDPut7MnRHI3F6qRmh/cT2fUjG1MLdCNb4hE9A==}
+    dev: true
+
+  /@types/js-yaml@4.0.9:
+    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
     dev: true
 
   /@types/json-schema@7.0.15:
@@ -3289,6 +3299,13 @@ packages:
     dependencies:
       argparse: 2.0.1
     dev: true
+
+  /js-yaml@5.2.1:
+    resolution: {integrity: sha512-zfLtNfQqxVqq3uaTqSkh4x4hZw3KHobGUA0fJUj4wawW8bsQLTVqpHdXSIzidh7o+4lEW36tANuAGdaFx6Zgnw==}
+    hasBin: true
+    dependencies:
+      argparse: 2.0.1
+    dev: false
 
   /jsdom@29.1.1:
     resolution: {integrity: sha512-ECi4Fi2f7BdJtUKTflYRTiaMxIB0O6zfR1fX0GXpUrf6flp8QIYn1UT20YQqdSOfk2dfkCwS8LAFoJDEppNK5Q==}

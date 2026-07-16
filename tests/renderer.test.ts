@@ -67,6 +67,31 @@ describe('renderMarkdown — extensions', () => {
   });
 });
 
+describe('renderMarkdown — frontmatter', () => {
+  it('renders leading frontmatter as a metadata table and the body normally', () => {
+    const html = renderMarkdown('---\ntitle: Hello\n---\n# Heading');
+    expect(html).toContain('mdv-frontmatter');
+    expect(html).toContain('Hello');
+    expect(html).toContain('id="heading"');
+  });
+
+  it('falls back to a yaml code block for malformed frontmatter', () => {
+    // Heading intentionally not named "Body"/"Head": DOMPurify's DOM-clobbering
+    // protection strips ids that collide with document properties.
+    const html = renderMarkdown('---\nbad: [unclosed\n---\n# Fallback Doc');
+    expect(html).toContain('language-yaml');
+    expect(html).toContain('id="fallback-doc"');
+  });
+
+  it('keeps mid-document --- as a horizontal rule', () => {
+    expect(renderMarkdown('para\n\n---\n\nmore')).toContain('<hr');
+  });
+
+  it('leaves documents without frontmatter unchanged', () => {
+    expect(renderMarkdown('# Just markdown')).not.toContain('mdv-frontmatter');
+  });
+});
+
 describe('renderMarkdown — sanitization', () => {
   it('strips script tags', () => {
     expect(renderMarkdown('<script>alert(1)</script>')).not.toContain('<script');

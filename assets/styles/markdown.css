@@ -192,6 +192,78 @@
   transform: rotate(45deg);
 }
 
+/* Frontmatter metadata table (GitHub-style, Cursor-skinned) */
+.markdown-body .mdv-frontmatter {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--mdv-hairline);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 0 32px;
+}
+.markdown-body .mdv-frontmatter > tbody > tr > .mdv-fm-key {
+  width: 120px;
+  min-width: 96px;
+  background: var(--mdv-canvas-soft);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.88px;
+  text-transform: uppercase;
+  color: var(--mdv-muted);
+  text-align: left;
+  vertical-align: top;
+  padding: 12px;
+  border-bottom: 1px solid var(--mdv-hairline-soft);
+  border-right: 1px solid var(--mdv-hairline-soft);
+}
+.markdown-body .mdv-frontmatter > tbody > tr > .mdv-fm-value {
+  padding: 10px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--mdv-hairline-soft);
+}
+.markdown-body .mdv-frontmatter > tbody > tr:last-child > .mdv-fm-key,
+.markdown-body .mdv-frontmatter > tbody > tr:last-child > .mdv-fm-value {
+  border-bottom: none;
+}
+.mdv-fm-scroll {
+  overflow-x: auto;
+}
+.markdown-body .mdv-fm-table {
+  width: auto;
+  margin: 4px 0;
+  border: 1px solid var(--mdv-hairline-soft);
+  border-radius: 6px;
+}
+.markdown-body .mdv-fm-table th {
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.markdown-body .mdv-fm-table td {
+  padding: 4px 10px;
+  font-family: var(--mdv-font-mono);
+  font-size: 12px;
+  white-space: nowrap;
+  border-bottom: none;
+}
+.mdv-fm-group {
+  margin: 6px 0 12px;
+}
+.mdv-fm-caption {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.88px;
+  text-transform: uppercase;
+  color: var(--mdv-muted);
+  margin: 8px 0 4px;
+}
+.mdv-fm-item {
+  margin: 4px 0;
+}
+.mdv-fm-null {
+  color: var(--mdv-muted-soft);
+}
+
 /* Media, rules, footnotes, definition lists, math */
 .markdown-body img {
   max-width: 100%;
