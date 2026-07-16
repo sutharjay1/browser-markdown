@@ -6,8 +6,5 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     include: ['tests/**/*.test.ts'],
-    css: {
-      include: [/github-markdown-css/, /highlight\.js/],
-    },
   },
 });

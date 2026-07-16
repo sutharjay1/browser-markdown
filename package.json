@@ -30,9 +30,10 @@
     "wxt": "^0.20.27"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
     "@vscode/markdown-it-katex": "^1.1.2",
     "dompurify": "^3.4.12",
-    "github-markdown-css": "^5.9.0",
     "github-slugger": "^2.0.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.17.0",
