@@ -3,6 +3,7 @@ import { applyTheme } from '@/lib/theme';
 import type { Settings } from '@/lib/settings';
 import { watchSettings } from '@/lib/settings';
 import { highlightCodeBlocks } from '@/lib/highlight';
+import { collectHeadings, renderTocList, initScrollSpy } from '@/lib/toc';
 
 declare global {
   interface Window {
@@ -17,6 +18,8 @@ export interface ViewerShell {
   article: HTMLElement;
   rawPre: HTMLPreElement;
 }
+
+let disconnectScrollSpy: (() => void) | null = null;
 
 export function initViewer(rawText: string, settings: Settings): void {
   const shell = buildShell(rawText);
@@ -53,7 +56,9 @@ export async function updateContent(
   }
   highlightCodeBlocks(shell.article);
   await renderMermaidDiagrams(shell.article, settings);
-  // Task 9 rebuilds the TOC here.
+  disconnectScrollSpy?.();
+  shell.sidebar.replaceChildren(renderTocList(collectHeadings(shell.article)));
+  disconnectScrollSpy = initScrollSpy(shell.article, shell.sidebar);
 }
 
 async function renderMermaidDiagrams(article: HTMLElement, settings: Settings): Promise<void> {
