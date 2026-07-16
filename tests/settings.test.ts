@@ -18,6 +18,19 @@ describe('settings', () => {
     expect(s.enableMermaid).toBe(false);
   });
 
+  it('defaults disabledHosts to an empty list and round-trips valid lists', async () => {
+    expect((await getSettings()).disabledHosts).toEqual([]);
+    await saveSettings({ ...DEFAULT_SETTINGS, disabledHosts: ['github.com', 'internal.dev'] });
+    expect((await getSettings()).disabledHosts).toEqual(['github.com', 'internal.dev']);
+  });
+
+  it('coerces malformed stored disabledHosts back to a clean string list', async () => {
+    await fakeBrowser.storage.sync.set({ settings: { disabledHosts: 'github.com' } });
+    expect((await getSettings()).disabledHosts).toEqual([]);
+    await fakeBrowser.storage.sync.set({ settings: { disabledHosts: ['ok.com', 42, null] } });
+    expect((await getSettings()).disabledHosts).toEqual(['ok.com']);
+  });
+
   it('merges defaults into partial stored settings (forward compatibility)', async () => {
     await fakeBrowser.storage.sync.set({ settings: { theme: 'light' } });
     expect(await getSettings()).toEqual({ ...DEFAULT_SETTINGS, theme: 'light' });

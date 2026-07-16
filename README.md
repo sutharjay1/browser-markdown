@@ -30,7 +30,8 @@ Quick version: build with `pnpm install && pnpm build`, then load `output/chrome
 
 ## Store notes
 
-- Permissions: `storage` (settings sync), `declarativeNetRequest` (strips restrictive CSP headers only on main-frame `.md` navigations so styles/fonts/images can render), host access limited to `*.md`/`*.markdown`/`*.mkd` URL patterns.
+- Permissions: `storage` (settings sync), `declarativeNetRequest` (strips restrictive CSP headers only on main-frame `.md` navigations that actually return raw markdown — scoped by response content-type on Chrome, github.com-excluded on Firefox), host access limited to `*.md`/`*.markdown`/`*.mkd` URL patterns.
+- Never renders HTML pages (content-type + raw-text detection), never runs on github.com, and any site can be disabled via the popup's "Disabled sites" list.
 - No remote code; every library is bundled. Mermaid loads lazily from the bundle only when a document contains a diagram.
 - Known limitation: Firefox's per-file origin policy can block auto-reload polling of `file://` documents; rendering itself is unaffected.
 

@@ -43,9 +43,20 @@ export default defineConfig({
     description: 'Fast, safe markdown rendering for local and remote .md files.',
     permissions: ['storage', 'declarativeNetRequest'],
     host_permissions: ['*://*/*.md*', '*://*/*.markdown*', '*://*/*.mkd*'],
+    // Per-browser CSP-strip rulesets: Chrome (>=128) scopes the strip by
+    // response content-type so HTML pages at .md URLs (e.g. github.com blob
+    // pages) are never touched; Firefox lacks responseHeaders conditions,
+    // so it excludes github.com by domain instead.
     declarative_net_request: {
-      rule_resources: [{ id: 'strip-csp', enabled: true, path: 'rules.json' }],
+      rule_resources: [
+        {
+          id: 'strip-csp',
+          enabled: true,
+          path: browser === 'firefox' ? 'rules.firefox.json' : 'rules.chrome.json',
+        },
+      ],
     },
+    ...(browser !== 'firefox' && { minimum_chrome_version: '128' }),
     web_accessible_resources: [
       {
         resources: ['assets/*', 'chunks/*', 'mermaid-runner.js'],

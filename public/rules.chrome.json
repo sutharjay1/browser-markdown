@@ -11,7 +11,13 @@
     },
     "condition": {
       "regexFilter": "\\.(md|mdown|markdown|mkd|mkdn)(\\?.*)?$",
-      "resourceTypes": ["main_frame"]
+      "resourceTypes": ["main_frame"],
+      "responseHeaders": [
+        {
+          "header": "content-type",
+          "values": ["text/plain*", "text/markdown*", "text/x-markdown*"]
+        }
+      ]
     }
   }
 ]

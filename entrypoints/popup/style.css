@@ -116,8 +116,33 @@ input[type='number']:focus-visible {
   outline-offset: 1px;
 }
 
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--mdv-surface);
+  color: var(--mdv-text);
+  border: 1px solid var(--mdv-hairline);
+  border-radius: 6px;
+  font-family: var(--mdv-font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  resize: vertical;
+  margin-top: 4px;
+}
+textarea:focus-visible {
+  outline: 2px solid var(--mdv-accent);
+  outline-offset: 1px;
+}
+textarea::placeholder {
+  color: var(--mdv-muted-soft);
+}
+
 .hint {
   color: var(--mdv-muted);
   font-size: 11px;
   margin: 10px 0 0;
+}
+.group .hint {
+  margin: 6px 0 2px;
 }

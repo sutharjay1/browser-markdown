@@ -6,7 +6,7 @@ import { getSettings, saveSettings, type Settings } from '@/lib/settings';
 
 const form = document.getElementById('settings-form') as HTMLFormElement;
 
-type Field = HTMLInputElement | HTMLSelectElement;
+type Field = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 function fields(): Field[] {
   return Array.from(form.elements).filter((el): el is Field => 'name' in el && !!(el as Field).name);
@@ -17,6 +17,9 @@ function load(settings: Settings): void {
     const value = settings[field.name as keyof Settings];
     if (field instanceof HTMLInputElement && field.type === 'checkbox') {
       field.checked = Boolean(value);
+    } else if (field instanceof HTMLTextAreaElement) {
+      // Textareas carry string-array settings, one entry per line.
+      field.value = Array.isArray(value) ? value.join('\n') : String(value ?? '');
     } else {
       field.value = String(value);
     }
@@ -32,6 +35,11 @@ async function persist(): Promise<void> {
       // Clamp before persisting: clearing the field yields Number('') === 0,
       // and HTML's min="500" isn't enforced on the value we read here.
       next[field.name] = Math.max(500, Number(field.value) || 1500);
+    } else if (field instanceof HTMLTextAreaElement) {
+      next[field.name] = field.value
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
     } else {
       next[field.name] = field.value;
     }

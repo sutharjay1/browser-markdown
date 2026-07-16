@@ -35,6 +35,11 @@
         <label class="row"><span>Remote URLs</span><input type="checkbox" name="autoReloadRemote" class="switch" /></label>
         <label class="row"><span>Interval (ms)</span><input type="number" name="autoReloadIntervalMs" min="500" step="250" /></label>
       </section>
+      <section class="group">
+        <div class="group-caption">Disabled sites</div>
+        <textarea name="disabledHosts" rows="3" placeholder="example.com&#10;*.internal.dev" spellcheck="false"></textarea>
+        <p class="hint">One hostname per line — subdomains are included.</p>
+      </section>
       <p class="hint">Theme applies live; other changes apply on next page load.</p>
     </form>
     <script type="module" src="./main.ts"></script>
