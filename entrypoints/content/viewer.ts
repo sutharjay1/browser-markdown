@@ -2,6 +2,7 @@ import { renderMarkdown } from '@/lib/renderer';
 import { applyTheme } from '@/lib/theme';
 import type { Settings } from '@/lib/settings';
 import { watchSettings } from '@/lib/settings';
+import { highlightCodeBlocks } from '@/lib/highlight';
 
 export interface ViewerShell {
   root: HTMLElement;
@@ -44,7 +45,7 @@ export async function updateContent(
       .getElementById(decodeURIComponent(location.hash.slice(1)))
       ?.scrollIntoView();
   }
-  // Task 7 highlights code blocks here.
+  highlightCodeBlocks(shell.article);
   // Task 8 renders mermaid diagrams here.
   // Task 9 rebuilds the TOC here.
 }
