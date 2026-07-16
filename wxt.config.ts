@@ -42,7 +42,7 @@ export default defineConfig({
     name: 'Markdown Viewer',
     description: 'Fast, safe markdown rendering for local and remote .md files.',
     permissions: ['storage', 'declarativeNetRequest'],
-    host_permissions: ['*://*/*.md*', '*://*/*.markdown*', '*://*/*.mkd*'],
+    host_permissions: ['*://*/*.md*', '*://*/*.markdown*', '*://*/*.mkd*', '*://*/*.txt*'],
     // Per-browser CSP-strip rulesets: Chrome (>=128) scopes the strip by
     // response content-type so HTML pages at .md URLs (e.g. github.com blob
     // pages) are never touched; Firefox lacks responseHeaders conditions,

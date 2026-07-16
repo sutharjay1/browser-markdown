@@ -10,7 +10,7 @@
       ]
     },
     "condition": {
-      "regexFilter": "\\.(md|mdown|markdown|mkd|mkdn)(\\?.*)?$",
+      "regexFilter": "\\.(md|mdx|mdown|markdown|mkd|mkdn|txt)(\\?.*)?$",
       "resourceTypes": ["main_frame"],
       "responseHeaders": [
         {

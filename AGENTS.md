@@ -1,6 +1,6 @@
 # browser-markdown — Agent Guide
 
-A Chrome (MV3) + Firefox (MV3) extension that renders raw `.md` files in place — local `file://` and remote `http(s)://` — with GFM, syntax-highlighted code, KaTeX math, lazy-loaded Mermaid diagrams, emoji, a TOC sidebar with scrollspy, GitHub light/dark themes, a raw-view toggle, auto-reload for local files, and a settings popup. Built with WXT + TypeScript; one codebase, two store-ready builds.
+A Chrome (MV3) + Firefox (MV3) extension that renders raw markdown files (`.md`, `.mdx`, `.markdown`, `.txt`, …) in place — local `file://` and remote `http(s)://` — with GFM, syntax-highlighted code, KaTeX math, lazy-loaded Mermaid diagrams, emoji, a TOC sidebar with scrollspy, GitHub light/dark themes, a raw-view toggle, auto-reload for local files, and a settings popup. Built with WXT + TypeScript; one codebase, two store-ready builds.
 
 ## Commands
 
@@ -49,7 +49,7 @@ Docs: design spec in `docs/superpowers/specs/`, implementation plan in `docs/sup
 - **Sanitization boundary:** every HTML string passes `DOMPurify.sanitize` before touching the DOM. The ONLY `innerHTML` sink in the codebase is `renderMarkdown(...)` output in `viewer.ts`. Never add another unsanitized sink; never move sanitize out of `renderer.ts`'s return. `md.validateLink = () => true` is deliberate — DOMPurify alone filters URI schemes, and `tests/renderer.test.ts` has the XSS regression suite protecting this.
 - **No remote code, no `eval`, no inline scripts** — Chrome Web Store and AMO both reject these. Every library is bundled.
 - **MV3 for both browsers** (`manifestVersion: 3` in `wxt.config.ts`); Firefox `strict_min_version: 128.0` (first with DNR on by default).
-- **Permissions are frozen:** `storage`, `declarativeNetRequest`, host permissions `*://*/*.md*`, `*://*/*.markdown*`, `*://*/*.mkd*`. Adding any permission is a store-review event — don't do it casually.
+- **Permissions are frozen:** `storage`, `declarativeNetRequest`, host permissions `*://*/*.md*` (covers .mdx/.mdown), `*://*/*.markdown*`, `*://*/*.mkd*`, `*://*/*.txt*`. Adding any permission is a store-review event — don't do it casually.
 - **TypeScript strict.** `any` is allowed only in `lib/shims.d.ts` and the two commented interop spots (katex plugin import, popup form binding).
 - Keep `renderer.ts` pure (string in → sanitized string out, no browser APIs) so it stays unit-testable.
 

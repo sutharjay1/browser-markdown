@@ -1,7 +1,7 @@
 {
   "name": "browser-markdown",
-  "version": "0.1.0",
-  "description": "Fast, safe in-place markdown rendering for Chrome & Firefox — GFM, KaTeX, Mermaid, TOC, themes, auto-reload.",
+  "version": "0.2.0",
+  "description": "Fast, safe in-place markdown rendering for Chrome & Firefox \u2014 GFM, KaTeX, Mermaid, TOC, themes, auto-reload.",
   "license": "MIT",
   "type": "module",
   "private": true,
