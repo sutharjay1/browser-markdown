@@ -4,16 +4,18 @@ A Chrome (MV3) + Firefox (MV3) extension that renders raw `.md` files in place �
 
 ## Commands
 
+**This project uses pnpm — never npm** (no `package-lock.json`; the lockfile is `pnpm-lock.yaml`).
+
 | Command | What it does |
 | --- | --- |
-| `npm install` | Installs deps; `postinstall` runs `wxt prepare` (regenerates `.wxt/` types — required before `tsc` works) |
-| `npm run dev` | Chrome dev build with HMR |
-| `npm run dev:firefox` | Firefox dev build |
-| `npm test` | Unit tests (vitest, jsdom) — `tests/**/*.test.ts` |
-| `npm run build` | Production builds for both browsers → `.output/chrome-mv3/`, `.output/firefox-mv3/` |
-| `npm run e2e` | Playwright E2E (`tests/e2e/*.spec.ts`) — requires `npm run build` first and `npx playwright install chromium` once |
-| `npm run lint:firefox` | AMO linter (`web-ext lint`) over the Firefox build |
-| `npm run zip` | Store-ready zips → `.output/*.zip` |
+| `pnpm install` | Installs deps; `postinstall` runs `wxt prepare` (regenerates `.wxt/` types — required before `tsc` works) |
+| `pnpm dev` | Chrome dev build with HMR |
+| `pnpm dev:firefox` | Firefox dev build |
+| `pnpm test` | Unit tests (vitest, jsdom) — `tests/**/*.test.ts` |
+| `pnpm build` | Production builds for both browsers → `.output/chrome-mv3/`, `.output/firefox-mv3/` |
+| `pnpm e2e` | Playwright E2E (`tests/e2e/*.spec.ts`) — requires `pnpm build` first and `pnpm exec playwright install chromium` once |
+| `pnpm lint:firefox` | AMO linter (`web-ext lint`) over the Firefox build |
+| `pnpm zip` | Store-ready zips → `.output/*.zip` |
 
 Type check: `npx tsc --noEmit` (strict mode).
 
@@ -63,5 +65,5 @@ Docs: design spec in `docs/superpowers/specs/`, implementation plan in `docs/sup
 ## Conventions
 
 - TDD for `lib/` modules: failing test → implementation → green, commit per unit of work.
-- Run `npm test` and `npx tsc --noEmit` before committing; run `npm run e2e` when `entrypoints/` changes.
+- Run `pnpm test` and `pnpm exec tsc --noEmit` before committing; run `pnpm e2e` when `entrypoints/` changes.
 - Commit messages: conventional prefixes (`feat:`, `fix:`, `test:`, `chore:`, `docs:`), no attribution trailers.

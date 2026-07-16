@@ -6,24 +6,34 @@ GFM (tables, task lists, footnotes, strikethrough, autolinks), syntax-highlighte
 
 ## Develop
 
+Uses [pnpm](https://pnpm.io) (`npm i -g pnpm` if you don't have it).
+
 ```bash
-npm install
-npm run dev            # Chrome with HMR
-npm run dev:firefox    # Firefox
-npm test               # unit tests (vitest)
-npm run build          # both browsers → .output/
-npm run e2e            # Playwright (requires npm run build first)
-npm run lint:firefox   # AMO linter over the Firefox build
-npm run zip            # store-ready packages
+pnpm install
+pnpm dev             # Chrome with HMR
+pnpm dev:firefox     # Firefox
+pnpm test            # unit tests (vitest)
+pnpm build           # both browsers → .output/
+pnpm e2e             # Playwright (requires pnpm build first)
+pnpm lint:firefox    # AMO linter over the Firefox build
+pnpm zip             # store-ready packages
 ```
 
-## Install (unpacked)
+## Install
 
-- **Chrome:** `chrome://extensions` → Developer mode → Load unpacked → `.output/chrome-mv3`. Then open the extension's Details and enable **Allow access to file URLs** for local files.
-- **Firefox:** `about:debugging#/runtime/this-firefox` → Load Temporary Add-on → `.output/firefox-mv3/manifest.json`. Grant site access under Manage Extension → Permissions.
+Step-by-step guides with screenshots-level detail:
+
+- **[Chrome install guide](INSTALL_CHROME.md)**
+- **[Firefox install guide](INSTALL_FIREFOX.md)**
+
+Quick version: build with `pnpm install && pnpm build`, then load `.output/chrome-mv3` unpacked in Chrome (and enable **Allow access to file URLs**), or `.output/firefox-mv3/manifest.json` as a temporary add-on in Firefox (and grant site access under Manage Extension → Permissions).
 
 ## Store notes
 
 - Permissions: `storage` (settings sync), `declarativeNetRequest` (strips restrictive CSP headers only on main-frame `.md` navigations so styles/fonts/images can render), host access limited to `*.md`/`*.markdown`/`*.mkd` URL patterns.
 - No remote code; every library is bundled. Mermaid loads lazily from the bundle only when a document contains a diagram.
 - Known limitation: Firefox's per-file origin policy can block auto-reload polling of `file://` documents; rendering itself is unaffected.
+
+## License
+
+[MIT](LICENSE)
