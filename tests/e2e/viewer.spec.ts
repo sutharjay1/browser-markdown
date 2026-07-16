@@ -30,6 +30,7 @@ test.beforeAll(async () => {
   context = await chromium.launchPersistentContext('', {
     channel: 'chromium',
     args: [`--disable-extensions-except=${EXT_PATH}`, `--load-extension=${EXT_PATH}`],
+    colorScheme: 'light',
   });
 });
 
