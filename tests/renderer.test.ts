@@ -83,4 +83,20 @@ describe('renderMarkdown — sanitization', () => {
   it('keeps benign inline HTML (GitHub compatibility)', () => {
     expect(renderMarkdown('a <b>bold</b> move')).toContain('<b>bold</b>');
   });
+
+  it('strips javascript: image sources', () => {
+    expect(renderMarkdown('![x](javascript:alert(1))')).not.toContain('javascript:');
+  });
+
+  it('strips javascript: autolinks', () => {
+    expect(renderMarkdown('<javascript:alert(1)>')).not.toContain('href="javascript:');
+  });
+
+  it('strips javascript: reference-style links', () => {
+    expect(renderMarkdown('[x][1]\n\n[1]: javascript:alert(1)')).not.toContain('javascript:');
+  });
+
+  it('returns empty output for empty input', () => {
+    expect(renderMarkdown('')).toBe('');
+  });
 });

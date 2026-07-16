@@ -16,6 +16,8 @@ export function watchFileChanges(
     xhr.open('GET', url);
     xhr.onload = () => {
       const text = xhr.responseText;
+      // Empty responses are treated as transient reads during editor
+      // truncate-then-write saves, never rendered.
       if (text && text !== last) {
         last = text;
         onChange(text);

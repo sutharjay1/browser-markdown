@@ -91,6 +91,16 @@ html[data-mdv-theme='dark'] #mdv-root {
 .mdv-btn:hover {
   filter: brightness(0.95);
 }
+.mdv-notice {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--mdv-border);
+  background: var(--mdv-bg);
+  color: var(--mdv-muted);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
 #mdv-raw {
   flex: 1;
   padding: 24px;

@@ -58,4 +58,15 @@ describe('watchFileChanges', () => {
     vi.advanceTimersByTime(5000);
     expect(FakeXHR.requestCount).toBe(1);
   });
+
+  it('ignores empty responses (editor truncate-then-write saves)', () => {
+    FakeXHR.responses = ['', 'new'];
+    const onChange = vi.fn();
+    const stop = watchFileChanges('file:///doc.md', 1000, 'old', onChange);
+    vi.advanceTimersByTime(1000);
+    expect(onChange).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1000);
+    expect(onChange).toHaveBeenCalledWith('new');
+    stop();
+  });
 });

@@ -33,7 +33,7 @@ export function initViewer(rawText: string, settings: Settings): void {
   wireToolbar(shell, settings);
   startAutoReload(shell, rawText, settings);
   watchSettings((s) => {
-    settings.theme = s.theme;
+    Object.assign(settings, s);
     applyTheme(s.theme);
   });
 }
@@ -43,17 +43,37 @@ export async function updateContent(
   rawText: string,
   settings: Settings,
 ): Promise<void> {
-  shell.article.innerHTML = renderMarkdown(rawText, {
-    katex: settings.enableKatex,
-    emoji: settings.enableEmoji,
-  });
+  try {
+    shell.article.innerHTML = renderMarkdown(rawText, {
+      katex: settings.enableKatex,
+      emoji: settings.enableEmoji,
+    });
+  } catch (err) {
+    // Spec-promised fallback: pipeline failure leaves the raw text visible
+    // with a small notice, rather than a blank article.
+    console.warn('[markdown-viewer] render failed:', err);
+    shell.rawPre.hidden = false;
+    shell.article.hidden = true;
+    shell.sidebar.hidden = true;
+    if (!shell.toolbar.querySelector('.mdv-notice')) {
+      const notice = document.createElement('span');
+      notice.className = 'mdv-notice';
+      notice.textContent = 'Markdown rendering failed — showing raw text';
+      shell.toolbar.append(notice);
+    }
+    return;
+  }
   const firstHeading = shell.article.querySelector('h1, h2');
   document.title =
     firstHeading?.textContent?.trim() || location.pathname.split('/').pop() || 'Markdown';
   if (location.hash) {
-    document
-      .getElementById(decodeURIComponent(location.hash.slice(1)))
-      ?.scrollIntoView();
+    try {
+      document
+        .getElementById(decodeURIComponent(location.hash.slice(1)))
+        ?.scrollIntoView();
+    } catch {
+      // Malformed fragment (e.g. "#%") — it simply doesn't scroll.
+    }
   }
   highlightCodeBlocks(shell.article);
   await renderMermaidDiagrams(shell.article, settings);
