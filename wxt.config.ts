@@ -65,7 +65,17 @@ export default defineConfig({
     ],
     ...(browser === 'firefox' && {
       browser_specific_settings: {
-        gecko: { id: 'browser-markdown@sutharjay', strict_min_version: '128.0' },
+        gecko: {
+          id: 'browser-markdown@sutharjay',
+          // 140 is the first version understanding data_collection_permissions
+          // (DNR itself only needs 128, so this is the binding floor).
+          strict_min_version: '140.0',
+          // AMO requires an explicit data-collection declaration; this
+          // extension collects nothing (settings stay in storage.sync).
+          data_collection_permissions: { required: ['none'] },
+        },
+        // Firefox for Android understands data_collection_permissions from 142.
+        gecko_android: { strict_min_version: '142.0' },
       },
     }),
   }),
