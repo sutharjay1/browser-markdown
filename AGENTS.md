@@ -33,12 +33,13 @@ lib/
   renderer.ts    markdown-it (+GFM/KaTeX/emoji plugins) → DOMPurify. THE security boundary.
   detect.ts      "is this tab a raw markdown file?" (content-type + single-<pre> body)
   settings.ts    storage.sync-backed Settings; normalizeSettings clamps on every read path
-  theme.ts       light/dark/auto via injected <style id="mdv-theme-css"> (color-only CSS)
+  theme.ts       stamps html[data-mdv-theme]; all colors are --mdv-* tokens in assets/styles/tokens.css (static, no injection)
   toc.ts         heading collection, TOC list, IntersectionObserver scrollspy
   highlight.ts   idle-scheduled highlight.js (lib/common) on pre>code
   reload.ts      XHR polling for file:// auto-reload (fetch rejects file:// in Chrome)
   patterns.ts    shared content-script URL match patterns
   shims.d.ts     module declarations for untyped markdown-it plugins (the only allowed `any`)
+assets/styles/  tokens.css + markdown.css + hljs-cursor.css (design system)
 ```
 
 Docs: design spec in `docs/superpowers/specs/`, implementation plan in `docs/superpowers/plans/`.
@@ -54,10 +55,10 @@ Docs: design spec in `docs/superpowers/specs/`, implementation plan in `docs/sup
 
 ## Gotchas (these cost real debugging time — don't re-learn them)
 
-- **`?inline` CSS in tests:** vitest disables CSS processing by default; `vitest.config.ts` has `test.css.include` for `github-markdown-css` and `highlight.js`. Without it those imports silently become `''`.
 - **The noncharacter Vite plugin in `wxt.config.ts` is load-bearing.** Chromium refuses to load extensions whose JS contains a raw Unicode noncharacter (U+FFFF ends up in the minified KaTeX bundle under Vite 8). The plugin re-escapes them post-minify. Removing it breaks `--load-extension` and store uploads silently.
 - **Test file split:** `.test.ts` = vitest unit tests; `.spec.ts` = Playwright E2E. vitest's include pattern only matches `.test.ts` — keep it that way.
-- **KaTeX CSS** is imported as a real stylesheet in the content script (fonts inline as base64); theme CSS goes through `?inline` + `<style>` injection instead. Don't swap these — theme CSS is color-only, KaTeX CSS has assets.
+- **Theming is static tokens.** assets/styles/tokens.css defines light (:root) and dark (html[data-mdv-theme='dark']) palettes; theme.ts only flips the attribute. Never re-introduce runtime <style> injection or github-markdown-css.
+- **Fonts are bundled** (@fontsource Inter latin 400/500/600 + JetBrains Mono latin 400), imported in the content entry and popup main.ts; they inline into the built CSS.
 - **Mermaid must stay out of the content bundle.** It ships as the unlisted `mermaid-runner.js` (WAR-exposed) and is dynamic-imported on demand. If `content.js` suddenly grows by megabytes, this regressed.
 - **Local files:** Chrome needs the "Allow access to file URLs" toggle per install; Firefox MV3 needs a manual host-permission grant (Manage Extension → Permissions). Firefox may also block file:// re-reads, disabling auto-reload there (rendering unaffected).
 - **Empty-file saves intentionally don't re-render** (`lib/reload.ts`): editors truncate-then-write on save; reacting to the empty read would flash a blank page. There's a test pinning this.
