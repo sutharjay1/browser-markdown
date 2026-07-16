@@ -24,9 +24,20 @@ export const DEFAULT_SETTINGS: Settings = {
   autoReloadIntervalMs: 1500,
 };
 
+// Single choke point for merged settings: floors autoReloadIntervalMs so a
+// stored 0/negative/non-numeric value (e.g. from clearing the popup's number
+// input) can never make lib/reload.ts busy-poll with setInterval(..., 0).
+function normalizeSettings(partial: Partial<Settings>): Settings {
+  const merged = { ...DEFAULT_SETTINGS, ...partial };
+  return {
+    ...merged,
+    autoReloadIntervalMs: Math.max(500, Number(merged.autoReloadIntervalMs) || 1500),
+  };
+}
+
 export async function getSettings(): Promise<Settings> {
   const stored = await browser.storage.sync.get('settings');
-  return { ...DEFAULT_SETTINGS, ...(stored.settings ?? {}) };
+  return normalizeSettings(stored.settings ?? {});
 }
 
 export async function saveSettings(settings: Settings): Promise<void> {
@@ -36,7 +47,7 @@ export async function saveSettings(settings: Settings): Promise<void> {
 export function watchSettings(callback: (settings: Settings) => void): void {
   browser.storage.sync.onChanged.addListener((changes) => {
     if (changes.settings) {
-      callback({ ...DEFAULT_SETTINGS, ...(changes.settings.newValue ?? {}) });
+      callback(normalizeSettings(changes.settings.newValue ?? {}));
     }
   });
 }

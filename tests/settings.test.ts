@@ -22,4 +22,19 @@ describe('settings', () => {
     await fakeBrowser.storage.sync.set({ settings: { theme: 'light' } });
     expect(await getSettings()).toEqual({ ...DEFAULT_SETTINGS, theme: 'light' });
   });
+
+  it('falls back to the default interval when stored value is 0', async () => {
+    await fakeBrowser.storage.sync.set({ settings: { autoReloadIntervalMs: 0 } });
+    expect((await getSettings()).autoReloadIntervalMs).toBe(1500);
+  });
+
+  it('clamps a stored interval below the floor up to 500', async () => {
+    await fakeBrowser.storage.sync.set({ settings: { autoReloadIntervalMs: 100 } });
+    expect((await getSettings()).autoReloadIntervalMs).toBe(500);
+  });
+
+  it('keeps a stored interval that is already above the floor', async () => {
+    await fakeBrowser.storage.sync.set({ settings: { autoReloadIntervalMs: 2000 } });
+    expect((await getSettings()).autoReloadIntervalMs).toBe(2000);
+  });
 });

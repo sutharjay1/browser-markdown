@@ -25,11 +25,16 @@ async function persist(): Promise<void> {
     if (field instanceof HTMLInputElement && field.type === 'checkbox') {
       next[field.name] = field.checked;
     } else if (field instanceof HTMLInputElement && field.type === 'number') {
-      next[field.name] = Number(field.value);
+      // Clamp before persisting: clearing the field yields Number('') === 0,
+      // and HTML's min="500" isn't enforced on the value we read here.
+      next[field.name] = Math.max(500, Number(field.value) || 1500);
     } else {
       next[field.name] = field.value;
     }
   }
+  // Double-cast: Record<string, unknown> has no structural overlap with
+  // Settings, but field names come from the Settings keys via load(), so the
+  // runtime shape here is actually correct.
   await saveSettings(next as unknown as Settings);
 }
 
