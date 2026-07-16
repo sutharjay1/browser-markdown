@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Markdown Viewer Settings</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <h1>Markdown Viewer</h1>
+    <form id="settings-form">
+      <label class="row"><span>Enabled</span><input type="checkbox" name="enabled" /></label>
+      <label class="row"><span>Theme</span>
+        <select name="theme">
+          <option value="auto">Auto</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+      <label class="row"><span>Mermaid diagrams</span><input type="checkbox" name="enableMermaid" /></label>
+      <label class="row"><span>Math (KaTeX)</span><input type="checkbox" name="enableKatex" /></label>
+      <label class="row"><span>Emoji shortcodes</span><input type="checkbox" name="enableEmoji" /></label>
+      <label class="row"><span>Auto-reload local files</span><input type="checkbox" name="autoReload" /></label>
+      <label class="row"><span>Auto-reload remote URLs</span><input type="checkbox" name="autoReloadRemote" /></label>
+      <label class="row"><span>Reload interval (ms)</span><input type="number" name="autoReloadIntervalMs" min="500" step="250" /></label>
+    </form>
+    <p class="hint">Theme applies live; other changes apply on next page load.</p>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
