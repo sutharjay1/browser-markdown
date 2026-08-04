@@ -38,6 +38,7 @@ lib/
   highlight.ts   idle-scheduled highlight.js (lib/common) on pre>code
   reload.ts      XHR polling for file:// auto-reload (fetch rejects file:// in Chrome)
   patterns.ts    shared content-script URL match patterns
+  permissions.ts host-access checks + one-click grant (Firefox MV3 grants none at install)
   shims.d.ts     module declarations for untyped markdown-it plugins (the only allowed `any`)
 assets/styles/  tokens.css + markdown.css + hljs-cursor.css (design system)
 ```
@@ -63,6 +64,8 @@ Docs: design spec in `docs/superpowers/specs/`, implementation plan in `docs/sup
 - **CSP-strip rules are per-browser** (`public/rules.chrome.json` / `rules.firefox.json`, picked in wxt.config.ts). Chrome scopes the strip by response `content-type` (needs Chrome ≥128, pinned via `minimum_chrome_version`); Firefox can't match response headers, so it excludes github.com by domain. Never collapse these back into one file — Firefox rejects rules with unknown condition keys.
 - **Site avoidance is layered:** content-type + single-`<pre>` detection (universal), `excludeMatches` for github.com (perf), and the user `disabledHosts` setting via `lib/sitelist.ts` (subdomain-inclusive matching). The popup textarea binds string-array settings one-per-line.
 - **Local files:** Chrome needs the "Allow access to file URLs" toggle per install; Firefox MV3 needs a manual host-permission grant (Manage Extension → Permissions). Firefox may also block file:// re-reads, disabling auto-reload there (rendering unaffected).
+- **Firefox MV3 grants NO host permission at install** — every pattern (including the `file:///*` ones) starts in the add-on's *optional* set, so a fresh install renders nothing anywhere and looks exactly like a detection bug. `lib/permissions.ts` + the popup's access banner surface and (on Firefox) one-click fix it. Diagnose a real install by reading `extensions.json` in the profile: `userPermissions.origins: []` means nothing was ever granted.
+- **`permissions.contains()` is not a file-access check on Chromium** — it answers for declared patterns regardless of the toggle. Use `extension.isAllowedFileSchemeAccess()` there, discriminated by the absence of `runtime.getBrowserInfo` (Firefox-only); Firefox has the probe too but it doesn't reflect granted origins, hence the browser check rather than feature detection.
 - **Empty-file saves intentionally don't re-render** (`lib/reload.ts`): editors truncate-then-write on save; reacting to the empty read would flash a blank page. There's a test pinning this.
 
 ## Conventions

@@ -3,6 +3,12 @@ import '@fontsource/inter/latin-500.css';
 import '@fontsource/inter/latin-600.css';
 import '@/assets/styles/tokens.css';
 import { getSettings, saveSettings, type Settings } from '@/lib/settings';
+import {
+  missingOrigins,
+  requestAccess,
+  usesFileSchemeToggle,
+  FILE_ORIGINS,
+} from '@/lib/permissions';
 
 const form = document.getElementById('settings-form') as HTMLFormElement;
 
@@ -52,3 +58,45 @@ async function persist(): Promise<void> {
 
 void getSettings().then(load);
 form.addEventListener('change', () => void persist());
+
+// --- Site access -----------------------------------------------------------
+// Firefox MV3 ships every host permission ungranted, so a fresh install renders
+// nothing and gives no clue why. Surface it here, where the click that grants
+// it is a user gesture (permissions.request() requires one).
+
+const banner = document.getElementById('access-banner') as HTMLElement;
+const bannerBody = document.getElementById('access-body') as HTMLElement;
+const grantButton = document.getElementById('access-grant') as HTMLButtonElement;
+
+async function refreshAccess(): Promise<void> {
+  const missing = await missingOrigins();
+  banner.hidden = missing.length === 0;
+  if (missing.length === 0) return;
+  const onlyFilesMissing = missing.every((o) => FILE_ORIGINS.includes(o));
+  // On Chromium, file access is a checkbox on the extension's details page —
+  // permissions.request() can never satisfy it, so don't offer a dead button.
+  const buttonIsUseless = onlyFilesMissing && usesFileSchemeToggle();
+  grantButton.hidden = buttonIsUseless;
+  bannerBody.textContent = buttonIsUseless
+    ? 'Open this extension’s details page and turn on “Allow access to file URLs” to render local .md files.'
+    : onlyFilesMissing
+      ? 'Local file:// access isn’t granted yet, so local .md files stay unrendered.'
+      : 'Access to markdown files isn’t granted yet, so pages stay unrendered.';
+}
+
+grantButton.addEventListener('click', () => {
+  void (async () => {
+    grantButton.disabled = true;
+    const { fileAccessUnavailable } = await requestAccess(await missingOrigins());
+    await refreshAccess();
+    if (!banner.hidden && fileAccessUnavailable) {
+      // Chrome's file access is a per-install toggle no API can flip.
+      bannerBody.textContent =
+        'For local files, open the extension’s details page and turn on “Allow access to file URLs”.';
+      grantButton.hidden = true;
+    }
+    grantButton.disabled = false;
+  })();
+});
+
+void refreshAccess();

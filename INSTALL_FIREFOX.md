@@ -1,4 +1,4 @@
-# Installing Markdown Viewer in Firefox
+# Installing Browser Markdown in Firefox
 
 Two ways to run it: as a **temporary add-on** (quick, but removed when Firefox closes) or **permanently** via Firefox Developer Edition / Nightly. Once the extension is published on addons.mozilla.org, normal one-click install will replace all of this.
 
@@ -27,10 +27,14 @@ The extension appears under "Temporary Extensions". **Note:** temporary add-ons 
 
 ## 3. Grant host permissions (required)
 
-Firefox MV3 does **not** grant site access automatically — without this step nothing renders:
+Firefox MV3 does **not** grant site access automatically — without this step nothing renders, local or remote.
+
+**Fastest way:** click the extension's toolbar icon. If access is missing, the popup shows a **"Site access needed"** banner — click **Grant access** and accept Firefox's prompt, then reload any open `.md` tab.
+
+Manually, if you prefer:
 
 1. Click the puzzle-piece (Extensions) icon in the toolbar.
-2. Find **Markdown Viewer** → click the gear/… → **Manage Extension**.
+2. Find **Browser Markdown** → click the gear/… → **Manage Extension**.
 3. Open the **Permissions** tab.
 4. Enable the listed site access permissions (the `.md`-pattern host access).
 
@@ -62,7 +66,7 @@ Unsigned extensions can be permanently installed only in **Firefox Developer Edi
 
 | Problem | Fix |
 | --- | --- |
-| A `.md` URL shows plain text | Host permissions not granted — see step 3. Then reload the tab. |
+| A `.md` URL (or a local file) shows plain text | Host permissions not granted — open the popup and click **Grant access** (step 3). Then reload the tab. |
 | Extension gone after restarting Firefox | Temporary add-ons don't persist — reload it, or use the persistent-install method. |
 | Page renders but styles look broken on GitHub raw URLs | Reload the tab once — the CSP-strip rule applies to fresh navigations only. |
 | Local file doesn't auto-reload on save | Known Firefox limitation (see step 4) — reload manually. |

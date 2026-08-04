@@ -2,17 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Markdown Viewer Settings</title>
+    <title>Browser Markdown Settings</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
+    <!-- Outside #settings-form on purpose: main.ts binds every named form
+         element to a Settings key, and these controls are not settings. -->
+    <section id="access-banner" class="access-banner" hidden>
+      <p class="access-title">Site access needed</p>
+      <p class="access-body" id="access-body">
+        This browser hasn’t granted access to markdown files yet, so pages stay unrendered.
+      </p>
+      <button type="button" id="access-grant" class="access-button">Grant access</button>
+    </section>
     <form id="settings-form">
       <header class="popup-header">
         <div>
-          <h1>Markdown Viewer</h1>
+          <h1>Browser Markdown</h1>
           <p class="version">Cursor-style markdown rendering</p>
         </div>
-        <input type="checkbox" name="enabled" class="switch" title="Enable Markdown Viewer" aria-label="Enabled" />
+        <input type="checkbox" name="enabled" class="switch" title="Enable Browser Markdown" aria-label="Enabled" />
       </header>
       <section class="group">
         <label class="row"><span>Theme</span>
