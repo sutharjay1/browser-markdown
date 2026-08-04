@@ -39,7 +39,7 @@ export default defineConfig({
     plugins: [asciiSafeExtensionOutput()],
   }),
   manifest: ({ browser }) => ({
-    name: 'Markdown Viewer',
+    name: 'Browser Markdown',
     description: 'Fast, safe markdown rendering for local and remote .md files.',
     permissions: ['storage', 'declarativeNetRequest'],
     host_permissions: ['*://*/*.md*', '*://*/*.markdown*', '*://*/*.mkd*', '*://*/*.txt*'],

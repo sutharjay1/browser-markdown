@@ -1,4 +1,4 @@
-# Installing Markdown Viewer in Chrome
+# Installing Browser Markdown in Chrome
 
 Works in Chrome and Chromium-based browsers (Edge, Brave, Arc, Vivaldi — menus may be named slightly differently).
 
@@ -24,13 +24,13 @@ The extension folder is `output/chrome-mv3/`.
 3. Click **Load unpacked** (top-left).
 4. Select the extension folder (`output/chrome-mv3` if built from source, or the unzipped folder).
 
-The "Markdown Viewer" card appears in the list. That's the extension installed — remote markdown URLs (e.g. `raw.githubusercontent.com/.../README.md`) render immediately.
+The "Browser Markdown" card appears in the list. That's the extension installed — remote markdown URLs (e.g. `raw.githubusercontent.com/.../README.md`) render immediately.
 
 ## 3. Enable local file access (for `file://` .md files)
 
 Chrome blocks extensions from file URLs by default. To view markdown files from your disk:
 
-1. On the Markdown Viewer card in `chrome://extensions`, click **Details**.
+1. On the Browser Markdown card in `chrome://extensions`, click **Details**.
 2. Turn on **Allow access to file URLs**.
 
 Now drag any `.md` file into a tab (or press `Cmd/Ctrl+O` and open one) and it renders. Bonus: with auto-reload on (default), edit the file in your editor, save, and the tab updates within ~2 seconds, keeping your scroll position.

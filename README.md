@@ -1,4 +1,4 @@
-# Markdown Viewer
+# Browser Markdown
 
 Fast, safe, in-place rendering of markdown files (`.md`, `.mdx`, `.markdown`, `.txt`) — local (`file://`) and remote — for Chrome and Firefox.
 

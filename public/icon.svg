@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Browser Markdown icon</title>
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="#2563eb"/>
+  <rect x="68" y="76" width="376" height="360" rx="48" fill="#f8fafc"/>
+  <path d="M116 76h280a48 48 0 0 1 48 48v44H68v-44a48 48 0 0 1 48-48Z" fill="#172554"/>
+  <circle cx="116" cy="122" r="12" fill="#f87171"/>
+  <circle cx="154" cy="122" r="12" fill="#fbbf24"/>
+  <circle cx="192" cy="122" r="12" fill="#34d399"/>
+  <rect x="96" y="196" width="320" height="176" rx="40" fill="#2563eb"/>
+  <path d="M132 236h38l36 44 36-44h38v96h-36v-48l-38 44-38-44v48h-36v-96Z" fill="#fff"/>
+  <path d="M316 236h34v54h32l-49 46-49-46h32v-54Z" fill="#fff"/>
+  <rect x="144" y="396" width="224" height="16" rx="8" fill="#cbd5e1"/>
+</svg>
