@@ -6,6 +6,7 @@ import {
   missingOrigins,
   requestAccess,
   hasFirefoxFileOptIn,
+  fileOptInMissing,
   type PermissionsApi,
 } from '../lib/permissions';
 
@@ -66,17 +67,10 @@ describe('permissions', () => {
     ).toEqual([]);
   });
 
-  it('also requires the Firefox file opt-in for file origins when the browser has one', async () => {
-    // Firefox 153+ blocks every file:// content script until the user turns on
-    // "Access local files on your computer" — granted file:// host patterns
-    // are no longer enough on their own.
-    const missing = await missingOrigins(
-      api({ contains: async () => true, fileSchemeOptIn: async () => false }),
-    );
-    expect(missing).toEqual([...FILE_ORIGINS]);
-  });
-
-  it('still reports ungranted file origins when the Firefox opt-in is on', async () => {
+  it('reports ungranted file origins even when the Firefox opt-in is on', async () => {
+    // The real-world trap: "Access local files" toggled on, but about:addons'
+    // "all websites" toggle only grants *://*/*, which never covers file://.
+    // Those origins still need permissions.request(), so they must be reported.
     const granted = new Set(WEB_ORIGINS);
     const missing = await missingOrigins(
       api({
@@ -87,8 +81,25 @@ describe('permissions', () => {
     expect(missing).toEqual([...FILE_ORIGINS]);
   });
 
-  it('reports nothing missing when origins and the Firefox opt-in are granted', async () => {
-    expect(await missingOrigins(api({ fileSchemeOptIn: async () => true }))).toEqual([]);
+  it('keeps the Firefox opt-in out of missingOrigins — it is not requestable', async () => {
+    expect(
+      await missingOrigins(api({ contains: async () => true, fileSchemeOptIn: async () => false })),
+    ).toEqual([]);
+  });
+
+  it('reports the Firefox file opt-in as missing only when the browser has it and it is off', async () => {
+    expect(await fileOptInMissing(api())).toBe(false);
+    expect(await fileOptInMissing(api({ fileSchemeOptIn: async () => true }))).toBe(false);
+    expect(await fileOptInMissing(api({ fileSchemeOptIn: async () => false }))).toBe(true);
+    expect(
+      await fileOptInMissing(
+        api({
+          fileSchemeOptIn: async () => {
+            throw new Error('unavailable');
+          },
+        }),
+      ),
+    ).toBe(true);
   });
 
   it('detects the Firefox file opt-in from 153 on', () => {

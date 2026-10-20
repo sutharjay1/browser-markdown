@@ -83,13 +83,11 @@ export async function missingOrigins(api: PermissionsApi = defaultApi()): Promis
   const fileAccess = api.isAllowedFileSchemeAccess
     ? await api.isAllowedFileSchemeAccess().catch(() => false)
     : null;
-  const fileOptIn = api.fileSchemeOptIn ? await api.fileSchemeOptIn().catch(() => false) : true;
   const checks = await Promise.all(
     REQUIRED_ORIGINS.map(async (origin) => {
       if (fileAccess !== null && origin.startsWith('file://')) {
         return fileAccess ? null : origin;
       }
-      if (!fileOptIn && origin.startsWith('file://')) return origin;
       try {
         return (await api.contains({ origins: [origin] })) ? null : origin;
       } catch {
@@ -99,6 +97,17 @@ export async function missingOrigins(api: PermissionsApi = defaultApi()): Promis
     }),
   );
   return checks.filter((o): o is string => o !== null);
+}
+
+/**
+ * True when Firefox 153+'s "Access local files on your computer" toggle is
+ * off. Kept apart from missingOrigins because the two are fixed differently:
+ * file:// host origins go through permissions.request(), while this toggle is
+ * only reachable by hand in about:addons. Both are needed for local files.
+ */
+export async function fileOptInMissing(api: PermissionsApi = defaultApi()): Promise<boolean> {
+  if (!api.fileSchemeOptIn) return false;
+  return !(await api.fileSchemeOptIn().catch(() => false));
 }
 
 /**

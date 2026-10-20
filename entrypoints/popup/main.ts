@@ -5,9 +5,9 @@ import '@/assets/styles/tokens.css';
 import { getSettings, saveSettings, type Settings } from '@/lib/settings';
 import {
   missingOrigins,
+  fileOptInMissing,
   requestAccess,
   usesFileSchemeToggle,
-  hasFirefoxFileOptIn,
   FILE_ORIGINS,
 } from '@/lib/permissions';
 
@@ -73,10 +73,16 @@ const grantButton = document.getElementById('access-grant') as HTMLButtonElement
 const FIREFOX_FILE_HINT =
   'Open about:addons → Browser Markdown → Permissions and turn on “Access local files on your computer” to render local .md files.';
 
-async function refreshAccess(): Promise<string[]> {
-  const missing = await missingOrigins();
-  banner.hidden = missing.length === 0;
-  if (missing.length === 0) return missing;
+async function refreshAccess(): Promise<void> {
+  const [missing, optInOff] = await Promise.all([missingOrigins(), fileOptInMissing()]);
+  banner.hidden = missing.length === 0 && !optInOff;
+  if (banner.hidden) return;
+  if (missing.length === 0) {
+    // Every grantable origin is in; only the about:addons toggle is left.
+    grantButton.hidden = true;
+    bannerBody.textContent = FIREFOX_FILE_HINT;
+    return;
+  }
   const onlyFilesMissing = missing.every((o) => FILE_ORIGINS.includes(o));
   // On Chromium, file access is a checkbox on the extension's details page —
   // permissions.request() can never satisfy it, so don't offer a dead button.
@@ -85,29 +91,19 @@ async function refreshAccess(): Promise<string[]> {
   bannerBody.textContent = buttonIsUseless
     ? 'Open this extension’s details page and turn on “Allow access to file URLs” to render local .md files.'
     : onlyFilesMissing
-      ? hasFirefoxFileOptIn()
-        ? FIREFOX_FILE_HINT
-        : 'Local file:// access isn’t granted yet, so local .md files stay unrendered.'
+      ? 'Local file:// access isn’t granted yet, so local .md files stay unrendered.'
       : 'Access to markdown files isn’t granted yet, so pages stay unrendered.';
-  return missing;
 }
 
 grantButton.addEventListener('click', () => {
   void (async () => {
     grantButton.disabled = true;
     const { fileAccessUnavailable } = await requestAccess(await missingOrigins());
-    const missing = await refreshAccess();
+    await refreshAccess();
     if (!banner.hidden && fileAccessUnavailable) {
       // Chrome's file access is a per-install toggle no API can flip.
       bannerBody.textContent =
         'For local files, open the extension’s details page and turn on “Allow access to file URLs”.';
-      grantButton.hidden = true;
-    } else if (
-      hasFirefoxFileOptIn() &&
-      missing.length > 0 &&
-      missing.every((o) => FILE_ORIGINS.includes(o))
-    ) {
-      // Host grants went through; only the add-on toggle is left.
       grantButton.hidden = true;
     }
     grantButton.disabled = false;
