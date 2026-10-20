@@ -73,8 +73,15 @@ const grantButton = document.getElementById('access-grant') as HTMLButtonElement
 const FIREFOX_FILE_HINT =
   'Open about:addons → Browser Markdown → Permissions and turn on “Access local files on your computer” to render local .md files.';
 
+// What the grant button asks for, captured when the banner renders. The click
+// must reach permissions.request() without awaiting anything first: Firefox
+// checks for a live user gesture at call time and rejects once a single
+// round-trip (like re-running missingOrigins) has happened.
+let pendingOrigins: string[] = [];
+
 async function refreshAccess(): Promise<void> {
   const [missing, optInOff] = await Promise.all([missingOrigins(), fileOptInMissing()]);
+  pendingOrigins = missing;
   banner.hidden = missing.length === 0 && !optInOff;
   if (banner.hidden) return;
   if (missing.length === 0) {
@@ -98,9 +105,9 @@ async function refreshAccess(): Promise<void> {
 grantButton.addEventListener('click', () => {
   void (async () => {
     grantButton.disabled = true;
-    const { fileAccessUnavailable } = await requestAccess(await missingOrigins());
+    const { fileAccessUnavailable } = await requestAccess(pendingOrigins);
     await refreshAccess();
-    if (!banner.hidden && fileAccessUnavailable) {
+    if (!banner.hidden && fileAccessUnavailable && usesFileSchemeToggle()) {
       // Chrome's file access is a per-install toggle no API can flip.
       bannerBody.textContent =
         'For local files, open the extension’s details page and turn on “Allow access to file URLs”.';

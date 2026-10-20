@@ -115,6 +115,14 @@ describe('permissions', () => {
     ).toBe(false);
   });
 
+  it('calls request() synchronously so Firefox still sees the user gesture', () => {
+    // Firefox rejects permissions.request() once the click handler has
+    // awaited anything — the prompt never shows and nothing is granted.
+    const request = vi.fn(async () => true);
+    void requestAccess(FILE_ORIGINS, api({ request }));
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+
   it('grants in one request when the browser accepts file origins', async () => {
     const request = vi.fn(async () => true);
     const result = await requestAccess(REQUIRED_ORIGINS, api({ request }));
