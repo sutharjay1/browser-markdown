@@ -5,6 +5,7 @@ import '@/assets/styles/tokens.css';
 import { getSettings, saveSettings, type Settings } from '@/lib/settings';
 import {
   missingOrigins,
+  fileOptInMissing,
   requestAccess,
   usesFileSchemeToggle,
   FILE_ORIGINS,
@@ -68,10 +69,27 @@ const banner = document.getElementById('access-banner') as HTMLElement;
 const bannerBody = document.getElementById('access-body') as HTMLElement;
 const grantButton = document.getElementById('access-grant') as HTMLButtonElement;
 
+// Firefox 153+ gates file:// behind its own add-on toggle that no API can flip.
+const FIREFOX_FILE_HINT =
+  'Open about:addons → Browser Markdown → Permissions and turn on “Access local files on your computer” to render local .md files.';
+
+// What the grant button asks for, captured when the banner renders. The click
+// must reach permissions.request() without awaiting anything first: Firefox
+// checks for a live user gesture at call time and rejects once a single
+// round-trip (like re-running missingOrigins) has happened.
+let pendingOrigins: string[] = [];
+
 async function refreshAccess(): Promise<void> {
-  const missing = await missingOrigins();
-  banner.hidden = missing.length === 0;
-  if (missing.length === 0) return;
+  const [missing, optInOff] = await Promise.all([missingOrigins(), fileOptInMissing()]);
+  pendingOrigins = missing;
+  banner.hidden = missing.length === 0 && !optInOff;
+  if (banner.hidden) return;
+  if (missing.length === 0) {
+    // Every grantable origin is in; only the about:addons toggle is left.
+    grantButton.hidden = true;
+    bannerBody.textContent = FIREFOX_FILE_HINT;
+    return;
+  }
   const onlyFilesMissing = missing.every((o) => FILE_ORIGINS.includes(o));
   // On Chromium, file access is a checkbox on the extension's details page —
   // permissions.request() can never satisfy it, so don't offer a dead button.
@@ -87,9 +105,9 @@ async function refreshAccess(): Promise<void> {
 grantButton.addEventListener('click', () => {
   void (async () => {
     grantButton.disabled = true;
-    const { fileAccessUnavailable } = await requestAccess(await missingOrigins());
+    const { fileAccessUnavailable } = await requestAccess(pendingOrigins);
     await refreshAccess();
-    if (!banner.hidden && fileAccessUnavailable) {
+    if (!banner.hidden && fileAccessUnavailable && usesFileSchemeToggle()) {
       // Chrome's file access is a per-install toggle no API can flip.
       bannerBody.textContent =
         'For local files, open the extension’s details page and turn on “Allow access to file URLs”.';

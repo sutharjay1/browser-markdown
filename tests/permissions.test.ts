@@ -5,6 +5,8 @@ import {
   WEB_ORIGINS,
   missingOrigins,
   requestAccess,
+  hasFirefoxFileOptIn,
+  fileOptInMissing,
   type PermissionsApi,
 } from '../lib/permissions';
 
@@ -63,6 +65,62 @@ describe('permissions', () => {
     expect(
       await missingOrigins(api({ isAllowedFileSchemeAccess: async () => true })),
     ).toEqual([]);
+  });
+
+  it('reports ungranted file origins even when the Firefox opt-in is on', async () => {
+    // The real-world trap: "Access local files" toggled on, but about:addons'
+    // "all websites" toggle only grants *://*/*, which never covers file://.
+    // Those origins still need permissions.request(), so they must be reported.
+    const granted = new Set(WEB_ORIGINS);
+    const missing = await missingOrigins(
+      api({
+        contains: async ({ origins }) => granted.has(origins[0]!),
+        fileSchemeOptIn: async () => true,
+      }),
+    );
+    expect(missing).toEqual([...FILE_ORIGINS]);
+  });
+
+  it('keeps the Firefox opt-in out of missingOrigins — it is not requestable', async () => {
+    expect(
+      await missingOrigins(api({ contains: async () => true, fileSchemeOptIn: async () => false })),
+    ).toEqual([]);
+  });
+
+  it('reports the Firefox file opt-in as missing only when the browser has it and it is off', async () => {
+    expect(await fileOptInMissing(api())).toBe(false);
+    expect(await fileOptInMissing(api({ fileSchemeOptIn: async () => true }))).toBe(false);
+    expect(await fileOptInMissing(api({ fileSchemeOptIn: async () => false }))).toBe(true);
+    expect(
+      await fileOptInMissing(
+        api({
+          fileSchemeOptIn: async () => {
+            throw new Error('unavailable');
+          },
+        }),
+      ),
+    ).toBe(true);
+  });
+
+  it('detects the Firefox file opt-in from 153 on', () => {
+    const ua = (v: number) =>
+      `Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:${v}.0) Gecko/20100101 Firefox/${v}.0`;
+    expect(hasFirefoxFileOptIn(ua(152))).toBe(false);
+    expect(hasFirefoxFileOptIn(ua(153))).toBe(true);
+    expect(hasFirefoxFileOptIn(ua(155))).toBe(true);
+    expect(
+      hasFirefoxFileOptIn(
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',
+      ),
+    ).toBe(false);
+  });
+
+  it('calls request() synchronously so Firefox still sees the user gesture', () => {
+    // Firefox rejects permissions.request() once the click handler has
+    // awaited anything — the prompt never shows and nothing is granted.
+    const request = vi.fn(async () => true);
+    void requestAccess(FILE_ORIGINS, api({ request }));
+    expect(request).toHaveBeenCalledTimes(1);
   });
 
   it('grants in one request when the browser accepts file origins', async () => {
