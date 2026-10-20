@@ -26,6 +26,12 @@ export interface PermissionsApi {
   request(permissions: { origins: string[] }): Promise<boolean>;
   /** Chromium's file-access probe; absent on browsers without the toggle. */
   isAllowedFileSchemeAccess?(): Promise<boolean>;
+  /**
+   * Firefox 153+'s separate file opt-in ("Access local files on your
+   * computer"). Unlike Chromium's probe it gates file:// *on top of* the host
+   * grants, so both must hold.
+   */
+  fileSchemeOptIn?(): Promise<boolean>;
 }
 
 /**
@@ -38,18 +44,29 @@ export function usesFileSchemeToggle(): boolean {
   return !('getBrowserInfo' in browser.runtime);
 }
 
+/**
+ * True on Firefox 153+, which blocks every file:// content script until the
+ * user flips "Access local files on your computer" in about:addons — even with
+ * file:// host permissions granted. Version-gated because older Firefox has
+ * isAllowedFileSchemeAccess() too but it always answers false there.
+ */
+export function hasFirefoxFileOptIn(userAgent: string = navigator.userAgent): boolean {
+  const match = /\bFirefox\/(\d+)/.exec(userAgent);
+  return match !== null && Number(match[1]) >= 153;
+}
+
 function defaultApi(): PermissionsApi {
   const api = browser.permissions as unknown as PermissionsApi;
   // WXT types this as the MV2 callback form; under MV3 it returns a promise.
   const probe = browser.extension?.isAllowedFileSchemeAccess as unknown as
     | (() => Promise<boolean>)
     | undefined;
-  if (!usesFileSchemeToggle() || typeof probe !== 'function') return api;
-  return {
-    contains: (p) => api.contains(p),
-    request: (p) => api.request(p),
-    isAllowedFileSchemeAccess: () => Promise.resolve(probe.call(browser.extension)),
-  };
+  if (typeof probe !== 'function') return api;
+  const check = () => Promise.resolve(probe.call(browser.extension));
+  const base = { contains: api.contains.bind(api), request: api.request.bind(api) };
+  if (usesFileSchemeToggle()) return { ...base, isAllowedFileSchemeAccess: check };
+  if (hasFirefoxFileOptIn()) return { ...base, fileSchemeOptIn: check };
+  return api;
 }
 
 export interface AccessResult {
@@ -66,11 +83,13 @@ export async function missingOrigins(api: PermissionsApi = defaultApi()): Promis
   const fileAccess = api.isAllowedFileSchemeAccess
     ? await api.isAllowedFileSchemeAccess().catch(() => false)
     : null;
+  const fileOptIn = api.fileSchemeOptIn ? await api.fileSchemeOptIn().catch(() => false) : true;
   const checks = await Promise.all(
     REQUIRED_ORIGINS.map(async (origin) => {
       if (fileAccess !== null && origin.startsWith('file://')) {
         return fileAccess ? null : origin;
       }
+      if (!fileOptIn && origin.startsWith('file://')) return origin;
       try {
         return (await api.contains({ origins: [origin] })) ? null : origin;
       } catch {
